@@ -126,11 +126,6 @@
       transition: 0.3s;
     }
 
-    .btn-modern-add:hover {
-      background-color: #333;
-      transform: translateY(-1px);
-    }
-
     .btn-action-edit {
       background-color: var(--success-color);
       color: #fff;
@@ -155,7 +150,6 @@
 </head>
 
 <body>
-
   <div class="main-card">
     <div class="page-info">HALAMAN : 00</div>
     <div class="header-brand">
@@ -163,7 +157,7 @@
       <p>SPT ♥</p>
     </div>
 
-    <div class="d-flex justify-content-end mb-4 text-center">
+    <div class="d-flex justify-content-end mb-4">
       <button class="btn-modern-add" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
     </div>
 
@@ -303,6 +297,9 @@
 
     <?php if (isset($_GET['status'])): ?>
       const status = '<?= $_GET['status'] ?>';
+      const type = '<?= $_GET['type'] ?? "" ?>';
+      const val = '<?= $_GET['val'] ?? "" ?>';
+
       let config = {
         confirmButtonColor: '#000000',
         timer: 2000,
@@ -311,7 +308,9 @@
 
       if (status === 'exists') {
         config.title = 'Gagal Simpan!';
-        config.text = 'Nomor urut <?= $_GET['no'] ?? "" ?> sudah terisi. Gunakan nomor lain.';
+        config.text = (type === 'nomor')
+          ? `Nomor urut ${val} sudah terisi. Gunakan nomor lain.`
+          : `Kode klasifikasi ${val} sudah ada. Gunakan kode unik lain.`;
         config.icon = 'error';
         config.showConfirmButton = true;
         config.timer = undefined;
@@ -326,7 +325,6 @@
       }
 
       Swal.fire(config).then(() => {
-        // Membersihkan parameter status di URL tanpa refresh agar tombol kembali berfungsi normal
         window.history.replaceState({}, document.title, window.location.pathname);
       });
     <?php endif; ?>

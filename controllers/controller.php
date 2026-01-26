@@ -33,19 +33,29 @@ class PengendaliController
             $plus = $_POST['plus'];
 
             if ($aksi == 'tambah') {
-                // Ambil semua data untuk pengecekan nomor urut
+                // Ambil semua data untuk pengecekan keunikan
                 $allData = $this->model->getAll();
-                $isDuplicate = false;
+                $isNoExists = false;
+                $isKlasExists = false;
+
                 foreach ($allData as $row) {
                     if ($row['no_urut'] == $no_urut) {
-                        $isDuplicate = true;
+                        $isNoExists = true;
+                        break;
+                    }
+                    if ($row['klas'] == $klas) {
+                        $isKlasExists = true;
                         break;
                     }
                 }
 
-                if ($isDuplicate) {
-                    // Jika nomor urut sudah ada, redirect dengan status exists
-                    header("Location: index.php?status=exists&no=" . $no_urut);
+                if ($isNoExists) {
+                    // Jika nomor urut sudah ada
+                    header("Location: index.php?status=exists&type=nomor&val=" . $no_urut);
+                    exit();
+                } else if ($isKlasExists) {
+                    // Jika kode klasifikasi sudah ada
+                    header("Location: index.php?status=exists&type=klasifikasi&val=" . $klas);
                     exit();
                 } else {
                     $this->model->create($no_urut, $klas, $plus);
