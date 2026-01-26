@@ -1,75 +1,42 @@
 <?php
-include_once 'config/database.php';
-include_once 'models/pengendali.php';
+include_once 'config/Database.php';
+include_once 'models/Pengendali.php';
 
-class PengendaliController
-{
+class PengendaliController {
     private $model;
 
-    public function __construct()
-    {
+    public function __construct() {
         $database = new Database();
-        $db = $database->getConnection();
-        $this->model = new Pengendali($db);
+        $this->model = new Pengendali($database->getConnection());
     }
 
-    public function index()
-    {
-        $dataRaw = $this->model->getAll();
+    public function index($page = 0) {
+        $dataRaw = $this->model->getByPage($page);
         $data = [];
         foreach ($dataRaw as $row) {
-            $key = str_pad($row['no_urut'], 2, "0", STR_PAD_LEFT);
-            $data[$key] = ['k' => $row['klas'], 'p' => $row['plus']];
+            $data[$row['no_urut']] = ['k' => $row['klas'], 'p' => $row['plus']];
         }
+        $currentPage = $page;
         include 'views/daftar_view.php';
     }
 
-    public function handleRequest()
-    {
+    public function handleRequest() {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 0;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $aksi = $_POST['aksi'];
-            $no_urut = $_POST['no_urut'];
-            $klas = $_POST['klas'];
-            $plus = $_POST['plus'];
-
+            $no_input = (int)$_POST['no_urut'];
             if ($aksi == 'tambah') {
-                // Ambil semua data untuk pengecekan keunikan
-                $allData = $this->model->getAll();
-                $isNoExists = false;
-                $isKlasExists = false;
-
-                foreach ($allData as $row) {
-                    if ($row['no_urut'] == $no_urut) {
-                        $isNoExists = true;
-                        break;
-                    }
-                    if ($row['klas'] == $klas) {
-                        $isKlasExists = true;
-                        break;
-                    }
-                }
-
-                if ($isNoExists) {
-                    // Jika nomor urut sudah ada
-                    header("Location: index.php?status=exists&type=nomor&val=" . $no_urut);
-                    exit();
-                } else if ($isKlasExists) {
-                    // Jika kode klasifikasi sudah ada
-                    header("Location: index.php?status=exists&type=klasifikasi&val=" . $klas);
-                    exit();
-                } else {
-                    $this->model->create($no_urut, $klas, $plus);
-                }
-            } elseif ($aksi == 'edit') {
-                $this->model->update($no_urut, $klas, $plus);
+                $db_id = ($page * 100) + $no_input;
+                $this->model->create($db_id, $_POST['klas'], $_POST['plus']);
+            } else {
+                $this->model->update($_POST['no_urut'], $_POST['klas'], $_POST['plus']);
             }
-            header("Location: index.php?status=success");
+            header("Location: index.php?page=$page&status=success");
             exit();
         }
-
         if (isset($_GET['hapus'])) {
             $this->model->delete($_GET['hapus']);
-            header("Location: index.php?status=deleted");
+            header("Location: index.php?page=$page&status=deleted");
             exit();
         }
     }
