@@ -4,225 +4,250 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daftar Pengendali - SPT</title>
+  <title>Daftar Pengendali SPT</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
-    body {
-      background-color: #e0e0e0;
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 20px;
+    :root {
+      --success-color: #10b981;
+      --danger-color: #ef4444;
     }
 
-    .document-container {
-      background-color: white;
-      width: 210mm;
+    body {
+      background-color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #000000;
+      padding: 40px 15px;
+    }
+
+    .main-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      padding: 40px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 10mm;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      min-height: 297mm;
       position: relative;
+      border: 1px solid #cbd5e1;
     }
 
     .page-info {
-      text-align: right;
-      font-size: 12px;
-      font-weight: bold;
+      position: absolute;
+      top: 25px;
+      right: 40px;
+      font-weight: 700;
+      font-size: 13px;
     }
 
-    .title {
+    .header-brand {
       text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header-brand h2 {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      display: inline-block;
+      border-bottom: 4px solid #000;
+    }
+
+    .header-brand p {
+      font-weight: 600;
       font-size: 18px;
-      font-weight: bold;
-      text-decoration: underline;
-      margin-top: 5px;
+      margin: 0;
     }
 
-    .subtitle {
-      text-align: center;
-      margin-top: 2px;
-      font-size: 14px;
+    .status-header-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       margin-bottom: 25px;
     }
 
-    .header-area {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      font-weight: bold;
-      margin-bottom: 5px;
-      padding: 0 5px;
-      align-items: flex-end;
+    .status-item {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-align: center;
     }
 
-    .btn-tambah-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .btn-tambah {
-      padding: 2px 10px;
-      font-size: 11px;
-      margin-bottom: 4px;
+    .table-responsive {
+      border: 2px solid #000;
+      border-radius: 4px;
+      overflow: hidden;
     }
 
     .main-table {
       width: 100%;
       border-collapse: collapse;
-      border: 2px solid black;
     }
 
-    .main-table th,
+    .main-table th {
+      background-color: #f1f5f9;
+      padding: 12px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      border-bottom: 2px solid #000;
+      border-right: 1px solid #000;
+    }
+
     .main-table td {
-      border: 1px solid black;
+      padding: 10px 6px;
+      font-size: 12px;
+      border-bottom: 1px solid #000;
+      border-right: 1px solid #000;
+      vertical-align: middle;
+      font-weight: 500;
+      color: #000;
+    }
+
+    .col-divider {
+      border-left: 3px solid #000 !important;
+    }
+
+    .no-column {
+      background-color: #f8fafc;
+      font-weight: 700;
+      width: 45px;
+    }
+
+    .btn-modern-add {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .btn-modern-add:hover {
+      background-color: #333;
+      transform: translateY(-1px);
+    }
+
+    .btn-action-edit {
+      background-color: var(--success-color);
+      color: #fff;
+      border: none;
+      padding: 3px 10px;
+      border-radius: 4px;
       font-size: 10px;
-      padding: 4px 2px;
-      height: 24px;
-      text-align: center;
+      font-weight: 700;
     }
 
-    .header-row {
-      background-color: #f2f2f2;
-    }
-
-    .col-no {
-      width: 30px;
-      background-color: #f9f9f9;
-      font-weight: bold;
-    }
-
-    .divider {
-      border-left: 2px solid black !important;
-    }
-
-    .btn-group-aksi {
-      display: flex;
-      gap: 3px;
-      justify-content: center;
-    }
-
-    .btn-edit-small {
-      cursor: pointer;
-      text-decoration: none;
-      color: #2196F3;
-      border: 1px solid #2196F3;
-      padding: 0px 4px;
-      border-radius: 3px;
-      font-size: 9px;
-      background: transparent;
-    }
-
-    .btn-hapus-small {
-      text-decoration: none;
-      color: #F44336;
-      border: 1px solid #F44336;
-      padding: 0px 4px;
-      border-radius: 3px;
-      font-size: 9px;
+    .btn-action-delete {
+      background-color: var(--danger-color);
+      color: #fff;
+      border: none;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 4px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="document-container">
+  <div class="main-card">
     <div class="page-info">HALAMAN : 00</div>
-    <div class="title">DAFTAR PENGENDALI</div>
-    <div class="subtitle">SPT ♥</div>
-
-    <div class="header-area">
-      <div style="width: 25%;">Terima tgl, +)</div>
-      <div style="width: 25%; text-align: center;">Simpan, +)</div>
-      <div style="width: 25%; text-align: center;">Kirim ke unit tgl, +)</div>
-      <div style="width: 25%; text-align: right;" class="btn-tambah-container">
-        <button type="button" class="btn btn-primary btn-tambah" onclick="bukaModalTambah()">
-          + Tambah Data
-        </button>
-        <div>Ekspedisi tgl, +)</div>
-      </div>
+    <div class="header-brand">
+      <h2>Daftar Pengendali</h2>
+      <p>SPT ♥</p>
     </div>
 
-    <table class="main-table">
-      <thead>
-        <tr class="header-row">
-          <?php for ($k = 0; $k < 3; $k++): ?>
-            <th class="col-no <?= ($k > 0) ? 'divider' : '' ?>">No. Urut</th>
-            <th style="width:85px;">Klas</th>
-            <th style="width:50px;">+)</th>
-            <th style="width:70px;">Aksi</th>
-          <?php endfor; ?>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-        // Loop untuk 34 baris (karena 3 kolom x 34 baris = ~100 data)
-        for ($i = 0; $i < 34; $i++) {
-          echo "<tr>";
-          // Konfigurasi kolom: Kolom 1 (0-33), Kolom 2 (34-66), Kolom 3 (67-99)
-          $config = [
-            ['start' => 0, 'max' => 33], 
-            ['start' => 34, 'max' => 66], 
-            ['start' => 67, 'max' => 99]
-          ];
+    <div class="d-flex justify-content-end mb-4">
+      <button class="btn-modern-add" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
+    </div>
 
-          foreach ($config as $index => $c) {
-            $class_divider = ($index > 0) ? "divider" : "";
-            $val = $c['start'] + $i;
-            
-            if ($val <= 99) {
-              $formatted_no = str_pad($val, 2, "0", STR_PAD_LEFT);
-              
-              // Mengambil data dari variabel $data yang dikirim Controller
-              $klas = $data[$formatted_no]['k'] ?? '';
-              $plus = $data[$formatted_no]['p'] ?? '';
+    <div class="status-header-grid">
+      <div class="status-item">Terima Tgl, +)</div>
+      <div class="status-item">Simpan, +)</div>
+      <div class="status-item">Kirim Ke Unit Tgl, +)</div>
+      <div class="status-item">Ekspedisi Tgl, +)</div>
+    </div>
 
-              echo "<td class='col-no $class_divider'>$formatted_no</td>";
-              echo "<td>$klas</td>";
-              echo "<td>$plus</td>";
-              echo "<td>";
-              if (isset($data[$formatted_no])) {
-                echo "<div class='btn-group-aksi'>";
-                echo "<button class='btn-edit-small' onclick='bukaModalEdit(\"$formatted_no\", \"$klas\", \"$plus\")'>Edit</button>";
-                echo "<a href='index.php?hapus=$val' class='btn-hapus-small' onclick='return confirm(\"Yakin ingin menghapus data nomor $formatted_no?\")'>Hapus</a>";
-                echo "</div>";
+    <div class="table-responsive">
+      <table class="main-table text-center">
+        <thead>
+          <tr>
+            <?php for ($k = 0; $k < 3; $k++): ?>
+              <th class="<?= ($k > 0) ? 'col-divider' : '' ?>">No</th>
+              <th>Klasifikasi</th>
+              <th width="70">Ket (+)</th>
+              <th width="140">Aksi</th>
+            <?php endfor; ?>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+          // Data dummy awal
+          $data = ["01" => ["k" => "000.4.14.3", "p" => "Perpus"]];
+
+          for ($i = 0; $i < 34; $i++) {
+            echo "<tr>";
+            $ranges = [['s' => 0, 'm' => 33], ['s' => 34, 'm' => 66], ['s' => 67, 'm' => 99]];
+            foreach ($ranges as $idx => $r) {
+              $divider = ($idx > 0) ? 'col-divider' : '';
+              $n = $r['s'] + $i;
+              if ($n <= $r['m']) {
+                $f_no = str_pad($n, 2, "0", STR_PAD_LEFT);
+                $k = $data[$f_no]['k'] ?? '';
+                $p = $data[$f_no]['p'] ?? '';
+                echo "<td class='no-column $divider'>$f_no</td>";
+                echo "<td>$k</td>";
+                echo "<td>$p</td>";
+                echo "<td>";
+                if (isset($data[$f_no])) {
+                  echo "<button class='btn-action-edit' onclick='bukaModalEdit(\"$f_no\", \"$k\", \"$p\")'>EDIT</button>";
+                  echo "<button class='btn-action-delete' onclick='konfirmasiHapus(\"$f_no\")'>HAPUS</button>";
+                }
+                echo "</td>";
+              } else {
+                echo "<td class='no-column $divider'></td><td></td><td></td><td></td>";
               }
-              echo "</td>";
             }
+            echo "</tr>";
           }
-          echo "</tr>";
-        }
-        ?>
-      </tbody>
-    </table>
+          ?>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="modal fade" id="modalData" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle">Tambah Data</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="modal fade" id="modalData" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+        <div class="modal-header bg-dark text-white" style="border-radius: 12px 12px 0 0;">
+          <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA BARU</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <form action="index.php" method="POST">
-          <div class="modal-body">
-            <input type="hidden" name="aksi" id="form_aksi" value="tambah">
+        <form id="formInput">
+          <input type="hidden" id="form_mode" value="tambah">
+          <div class="modal-body p-4">
             <div class="mb-3">
-              <label class="form-label">Nomor Urut</label>
-              <input type="number" name="no_urut" id="input_no" class="form-control" min="0" max="99" required>
+              <label class="form-label small fw-bold">NOMOR URUT</label>
+              <input type="number" id="input_no" class="form-control" placeholder="00-99" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Klasifikasi (Klas)</label>
-              <input type="text" name="klas" id="input_klas" class="form-control" required>
+              <label class="form-label small fw-bold">KLASIFIKASI</label>
+              <input type="text" id="input_klas" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Keterangan (+)</label>
-              <input type="text" name="plus" id="input_plus" class="form-control" required>
+              <label class="form-label small fw-bold">KETERANGAN (+)</label>
+              <input type="text" id="input_plus" class="form-control" required>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary" id="btnSubmit">Simpan Data</button>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light small fw-bold" data-bs-dismiss="modal">BATAL</button>
+            <button type="submit" class="btn btn-dark small fw-bold px-4">SIMPAN</button>
           </div>
         </form>
       </div>
@@ -230,28 +255,70 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
-    const modalElement = new bootstrap.Modal(document.getElementById('modalData'));
+    const modalCtrl = new bootstrap.Modal(document.getElementById('modalData'));
+    const formInput = document.getElementById('formInput');
 
     function bukaModalTambah() {
-      document.getElementById('modalTitle').innerText = "Tambah Data Baru";
-      document.getElementById('form_aksi').value = "tambah";
-      document.getElementById('input_no').value = "";
-      document.getElementById('input_klas').value = "";
-      document.getElementById('input_plus').value = "";
-      document.getElementById('input_no').readOnly = false;
-      modalElement.show();
+      document.getElementById('modalTitle').innerText = "TAMBAH DATA BARU";
+      document.getElementById('form_mode').value = "tambah";
+      formInput.reset();
+      modalCtrl.show();
     }
 
     function bukaModalEdit(no, klas, plus) {
-      document.getElementById('modalTitle').innerText = "Edit Data Nomor: " + no;
-      document.getElementById('form_aksi').value = "edit";
-      document.getElementById('input_no').value = parseInt(no);
+      document.getElementById('modalTitle').innerText = "EDIT DATA #" + no;
+      document.getElementById('form_mode').value = "edit";
+      document.getElementById('input_no').value = no;
       document.getElementById('input_klas').value = klas;
       document.getElementById('input_plus').value = plus;
-      document.getElementById('input_no').readOnly = true; 
-      modalElement.show();
+      modalCtrl.show();
+    }
+
+    // Logic untuk Pop Up Berhasil Simpan/Edit
+    formInput.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const mode = document.getElementById('form_mode').value;
+      const title = mode === 'tambah' ? 'Data Berhasil Ditambah!' : 'Data Berhasil Diperbarui!';
+
+      modalCtrl.hide();
+
+      Swal.fire({
+        title: 'Berhasil!',
+        text: title,
+        icon: 'success',
+        confirmButtonColor: '#000000',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    });
+
+    function konfirmasiHapus(no) {
+      Swal.fire({
+        title: 'Hapus Data?',
+        text: "Data nomor " + no + " akan dihapus permanen.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#000000',
+        cancelButtonColor: '#ef4444',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Terhapus!',
+            text: 'Data berhasil dihapus.',
+            icon: 'success',
+            confirmButtonColor: '#000000',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      });
     }
   </script>
 </body>
+
 </html>
