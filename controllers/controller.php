@@ -1,5 +1,5 @@
 <?php
-include_once 'config/database.php'; // Pakai d kecil sesuai nama file
+include_once 'config/database.php';
 include_once 'models/pengendali.php';
 
 class PengendaliController
@@ -28,19 +28,37 @@ class PengendaliController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $aksi = $_POST['aksi'];
+            $no_urut = $_POST['no_urut'];
+            $klas = $_POST['klas'];
+            $plus = $_POST['plus'];
+
             if ($aksi == 'tambah') {
-                $this->model->create($_POST['no_urut'], $_POST['klas'], $_POST['plus']);
+                // Ambil semua data untuk pengecekan nomor urut
+                $allData = $this->model->getAll();
+                $isDuplicate = false;
+                foreach ($allData as $row) {
+                    if ($row['no_urut'] == $no_urut) {
+                        $isDuplicate = true;
+                        break;
+                    }
+                }
+
+                if ($isDuplicate) {
+                    // Jika nomor urut sudah ada, redirect dengan status exists
+                    header("Location: index.php?status=exists&no=" . $no_urut);
+                    exit();
+                } else {
+                    $this->model->create($no_urut, $klas, $plus);
+                }
             } elseif ($aksi == 'edit') {
-                $this->model->update($_POST['no_urut'], $_POST['klas'], $_POST['plus']);
+                $this->model->update($no_urut, $klas, $plus);
             }
-            // Redirect dengan status sukses
             header("Location: index.php?status=success");
             exit();
         }
 
         if (isset($_GET['hapus'])) {
             $this->model->delete($_GET['hapus']);
-            // Redirect dengan status terhapus
             header("Location: index.php?status=deleted");
             exit();
         }

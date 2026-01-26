@@ -126,6 +126,11 @@
       transition: 0.3s;
     }
 
+    .btn-modern-add:hover {
+      background-color: #333;
+      transform: translateY(-1px);
+    }
+
     .btn-action-edit {
       background-color: var(--success-color);
       color: #fff;
@@ -158,7 +163,7 @@
       <p>SPT ♥</p>
     </div>
 
-    <div class="d-flex justify-content-end mb-4">
+    <div class="d-flex justify-content-end mb-4 text-center">
       <button class="btn-modern-add" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
     </div>
 
@@ -183,7 +188,6 @@
         </thead>
         <tbody>
           <?php
-          // Loop 34 baris untuk mengakomodasi 00-33 di kolom pertama
           for ($i = 0; $i < 34; $i++) {
             echo "<tr>";
             $ranges = [['s' => 0, 'm' => 33], ['s' => 34, 'm' => 66], ['s' => 67, 'm' => 99]];
@@ -237,7 +241,13 @@
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold text-uppercase">Keterangan (+)</label>
-              <input type="text" name="plus" id="input_plus" class="form-control" placeholder="Contoh: Perpus" required>
+              <select name="plus" id="input_plus" class="form-select" required>
+                <option value="" disabled selected>Pilih Keterangan...</option>
+                <option value="perpus">perpus</option>
+                <option value="arsip">arsip</option>
+                <option value="psp">psp</option>
+                <option value="keuangan">keuangan</option>
+              </select>
             </div>
           </div>
           <div class="modal-footer border-0">
@@ -268,9 +278,9 @@
       document.getElementById('modalTitle').innerText = "EDIT DATA #" + no;
       document.getElementById('form_mode').value = "edit";
       document.getElementById('input_no').value = parseInt(no);
-      document.getElementById('input_no').readOnly = true; // Nomor urut tidak boleh diubah saat edit
+      document.getElementById('input_no').readOnly = true;
       document.getElementById('input_klas').value = klas;
-      document.getElementById('input_plus').value = plus;
+      document.getElementById('input_plus').value = plus.toLowerCase();
       modalCtrl.show();
     }
 
@@ -286,24 +296,39 @@
         cancelButtonText: 'Batal'
       }).then((result) => {
         if (result.isConfirmed) {
-          // Mengarahkan ke index.php dengan parameter hapus
           window.location.href = "index.php?hapus=" + no;
         }
       });
     }
 
-    // Popup Sukses setelah Redirect dari Controller
     <?php if (isset($_GET['status'])): ?>
-      Swal.fire({
-        title: 'Berhasil!',
-        text: '<?= ($_GET['status'] == 'deleted') ? 'Data berhasil dihapus.' : 'Data berhasil disimpan.' ?>',
-        icon: 'success',
+      const status = '<?= $_GET['status'] ?>';
+      let config = {
         confirmButtonColor: '#000000',
         timer: 2000,
         showConfirmButton: false
+      };
+
+      if (status === 'exists') {
+        config.title = 'Gagal Simpan!';
+        config.text = 'Nomor urut <?= $_GET['no'] ?? "" ?> sudah terisi. Gunakan nomor lain.';
+        config.icon = 'error';
+        config.showConfirmButton = true;
+        config.timer = undefined;
+      } else if (status === 'deleted') {
+        config.title = 'Terhapus!';
+        config.text = 'Data berhasil dihapus.';
+        config.icon = 'success';
+      } else {
+        config.title = 'Berhasil!';
+        config.text = 'Data berhasil disimpan.';
+        config.icon = 'success';
+      }
+
+      Swal.fire(config).then(() => {
+        // Membersihkan parameter status di URL tanpa refresh agar tombol kembali berfungsi normal
+        window.history.replaceState({}, document.title, window.location.pathname);
       });
-      // Membersihkan URL
-      window.history.replaceState({}, document.title, window.location.pathname);
     <?php endif; ?>
   </script>
 </body>
