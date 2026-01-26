@@ -126,11 +126,6 @@
       transition: 0.3s;
     }
 
-    .btn-modern-add:hover {
-      background-color: #333;
-      transform: translateY(-1px);
-    }
-
     .btn-action-edit {
       background-color: var(--success-color);
       color: #fff;
@@ -188,9 +183,7 @@
         </thead>
         <tbody>
           <?php
-          // Data dummy awal
-          $data = ["01" => ["k" => "000.4.14.3", "p" => "Perpus"]];
-
+          // Loop 34 baris untuk mengakomodasi 00-33 di kolom pertama
           for ($i = 0; $i < 34; $i++) {
             echo "<tr>";
             $ranges = [['s' => 0, 'm' => 33], ['s' => 34, 'm' => 66], ['s' => 67, 'm' => 99]];
@@ -229,20 +222,22 @@
           <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA BARU</h6>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <form id="formInput">
-          <input type="hidden" id="form_mode" value="tambah">
+        <form id="formInput" action="" method="POST">
+          <input type="hidden" name="aksi" id="form_mode" value="tambah">
           <div class="modal-body p-4">
             <div class="mb-3">
-              <label class="form-label small fw-bold">NOMOR URUT</label>
-              <input type="number" id="input_no" class="form-control" placeholder="00-99" required>
+              <label class="form-label small fw-bold text-uppercase">Nomor Urut (00-99)</label>
+              <input type="number" name="no_urut" id="input_no" class="form-control" placeholder="00-99" min="0"
+                max="99" required>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">KLASIFIKASI</label>
-              <input type="text" id="input_klas" class="form-control" required>
+              <label class="form-label small fw-bold text-uppercase">Klasifikasi (Klas)</label>
+              <input type="text" name="klas" id="input_klas" class="form-control" placeholder="Contoh: 000.4.14.3"
+                required>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">KETERANGAN (+)</label>
-              <input type="text" id="input_plus" class="form-control" required>
+              <label class="form-label small fw-bold text-uppercase">Keterangan (+)</label>
+              <input type="text" name="plus" id="input_plus" class="form-control" placeholder="Contoh: Perpus" required>
             </div>
           </div>
           <div class="modal-footer border-0">
@@ -264,6 +259,7 @@
     function bukaModalTambah() {
       document.getElementById('modalTitle').innerText = "TAMBAH DATA BARU";
       document.getElementById('form_mode').value = "tambah";
+      document.getElementById('input_no').readOnly = false;
       formInput.reset();
       modalCtrl.show();
     }
@@ -271,29 +267,12 @@
     function bukaModalEdit(no, klas, plus) {
       document.getElementById('modalTitle').innerText = "EDIT DATA #" + no;
       document.getElementById('form_mode').value = "edit";
-      document.getElementById('input_no').value = no;
+      document.getElementById('input_no').value = parseInt(no);
+      document.getElementById('input_no').readOnly = true; // Nomor urut tidak boleh diubah saat edit
       document.getElementById('input_klas').value = klas;
       document.getElementById('input_plus').value = plus;
       modalCtrl.show();
     }
-
-    // Logic untuk Pop Up Berhasil Simpan/Edit
-    formInput.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const mode = document.getElementById('form_mode').value;
-      const title = mode === 'tambah' ? 'Data Berhasil Ditambah!' : 'Data Berhasil Diperbarui!';
-
-      modalCtrl.hide();
-
-      Swal.fire({
-        title: 'Berhasil!',
-        text: title,
-        icon: 'success',
-        confirmButtonColor: '#000000',
-        timer: 2000,
-        showConfirmButton: false
-      });
-    });
 
     function konfirmasiHapus(no) {
       Swal.fire({
@@ -307,17 +286,25 @@
         cancelButtonText: 'Batal'
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
-            title: 'Terhapus!',
-            text: 'Data berhasil dihapus.',
-            icon: 'success',
-            confirmButtonColor: '#000000',
-            timer: 1500,
-            showConfirmButton: false
-          });
+          // Mengarahkan ke index.php dengan parameter hapus
+          window.location.href = "index.php?hapus=" + no;
         }
       });
     }
+
+    // Popup Sukses setelah Redirect dari Controller
+    <?php if (isset($_GET['status'])): ?>
+      Swal.fire({
+        title: 'Berhasil!',
+        text: '<?= ($_GET['status'] == 'deleted') ? 'Data berhasil dihapus.' : 'Data berhasil disimpan.' ?>',
+        icon: 'success',
+        confirmButtonColor: '#000000',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      // Membersihkan URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    <?php endif; ?>
   </script>
 </body>
 
