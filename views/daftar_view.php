@@ -4,10 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daftar Pengendali SPT</title>
+  <title>Daftar Pengendali Surat Keluar</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --success-color: #10b981;
@@ -42,7 +43,7 @@
 
     .header-brand {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
 
     .header-brand h2 {
@@ -60,7 +61,6 @@
       margin: 0;
     }
 
-    /* CSS Pagination Style - DIKUNCI AGAR TIDAK BERGESER */
     .pagination-nav {
       margin-bottom: 30px;
       display: flex;
@@ -69,15 +69,20 @@
     }
 
     .nav-side {
-      width: 150px; /* Ruang tetap untuk sisi kiri & kanan */
+      width: 150px;
       display: flex;
     }
 
-    .nav-side.left { justify-content: flex-end; }
-    .nav-side.right { justify-content: flex-start; }
+    .nav-side.left {
+      justify-content: flex-end;
+    }
+
+    .nav-side.right {
+      justify-content: flex-start;
+    }
 
     .nav-center {
-      min-width: 150px; /* Ruang tetap untuk teks tengah */
+      min-width: 150px;
       text-align: center;
       font-size: 18px;
     }
@@ -97,20 +102,6 @@
     .btn-nav:hover {
       background: #000;
       color: #fff;
-    }
-
-    .status-header-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      margin-bottom: 25px;
-      padding: 0 10px;
-    }
-
-    .status-item {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      text-align: center;
     }
 
     .table-responsive {
@@ -162,7 +153,6 @@
       font-weight: 700;
       font-size: 12px;
       border-radius: 6px;
-      transition: 0.3s;
     }
 
     .btn-action-edit {
@@ -185,35 +175,45 @@
       font-weight: 700;
       margin-left: 4px;
     }
-    
+
     @media print {
-      .d-print-none { display: none !important; }
-      body { padding: 0; background: white; }
-      .main-card { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+      .d-print-none {
+        display: none !important;
+      }
+
+      body {
+        padding: 0;
+        background: white;
+      }
+
+      .main-card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="main-card">
-    <div class="page-info">HALAMAN : <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?></div>    
-    
+    <div class="page-info">HALAMAN : <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?></div>
+
     <div class="header-brand">
-      <h2>Daftar Pengendali</h2>
+      <h2>Daftar Pengendali Surat Keluar</h2>
       <p>SPT ♥</p>
     </div>
 
     <div class="pagination-nav d-print-none">
       <div class="nav-side left">
         <?php if ($currentPage > 0): ?>
-            <a href="index.php?page=<?php echo $currentPage - 1; ?>" class="btn-nav">← SEBELUMNYA</a>
+          <a href="index.php?page=<?php echo $currentPage - 1; ?>" class="btn-nav">← SEBELUMNYA</a>
         <?php endif; ?>
       </div>
-
       <div class="nav-center">
         <span class="fw-bold">LEMBAR <?php echo $currentPage; ?></span>
       </div>
-
       <div class="nav-side right">
         <a href="index.php?page=<?php echo $currentPage + 1; ?>" class="btn-nav">SELANJUTNYA →</a>
       </div>
@@ -223,13 +223,6 @@
       <button class="btn-modern-add" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
     </div>
 
-    <div class="status-header-grid">
-      <div class="status-item">Terima Tgl, +)</div>
-      <div class="status-item">Simpan, +)</div>
-      <div class="status-item">Kirim Ke Unit Tgl, +)</div>
-      <div class="status-item">Ekspedisi Tgl, +)</div>
-    </div>
-
     <div class="table-responsive">
       <table class="main-table text-center">
         <thead>
@@ -237,7 +230,7 @@
             <?php for ($k = 0; $k < 3; $k++): ?>
               <th class="<?php echo ($k > 0) ? 'col-divider' : ''; ?>">No</th>
               <th>Klasifikasi</th>
-              <th width="70">Ket (+)</th>
+              <th width="150">Ket (+)</th>
               <th width="140" class="d-print-none">Aksi</th>
             <?php endfor; ?>
           </tr>
@@ -250,14 +243,14 @@
             $ranges = [['s' => 0, 'm' => 33], ['s' => 34, 'm' => 66], ['s' => 67, 'm' => 99]];
             foreach ($ranges as $idx => $r) {
               $divider = ($idx > 0) ? 'col-divider' : '';
-              $display_no = $r['s'] + $i; 
-              $db_id = $baseID + $display_no; 
-              
+              $display_no = $r['s'] + $i;
+              $db_id = $baseID + $display_no;
+
               if ($display_no <= $r['m']) {
                 $f_no = str_pad($display_no, 2, "0", STR_PAD_LEFT);
                 $k = $data[$db_id]['k'] ?? '';
                 $p = $data[$db_id]['p'] ?? '';
-                
+
                 echo "<td class='no-column $divider'>$f_no</td>";
                 echo "<td>$k</td>";
                 echo "<td>$p</td>";
@@ -283,28 +276,31 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
         <div class="modal-header bg-dark text-white" style="border-radius: 12px 12px 0 0;">
-          <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA BARU</h6>
+          <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA</h6>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <form id="formInput" action="index.php?page=<?php echo $currentPage; ?>" method="POST">
           <input type="hidden" name="aksi" id="form_mode" value="tambah">
           <div class="modal-body p-4">
             <div class="mb-3">
-              <label class="form-label small fw-bold text-uppercase">Nomor Urut (00-99)</label>
-              <input type="number" name="no_urut" id="input_no" class="form-control" placeholder="00-99" min="0" max="99" required>
+              <label class="form-label small fw-bold text-uppercase">Nomor Baris (00-99)</label>
+              <input type="number" name="no_urut" id="input_no" class="form-control" placeholder="00-99" min="0"
+                max="99" required>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold text-uppercase">Klasifikasi (Klas)</label>
-              <input type="text" name="klas" id="input_klas" class="form-control" placeholder="Contoh: 000.4.14.3" required>
+              <label class="form-label small fw-bold text-uppercase">Klasifikasi</label>
+              <input type="text" name="klas" id="input_klas" class="form-control"
+                placeholder="Masukkan kode klasifikasi..." required>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold text-uppercase">Keterangan (+)</label>
+              <label class="form-label small fw-bold text-uppercase">Keterangan Bidang/Sub Bagian</label>
               <select name="plus" id="input_plus" class="form-select" required>
-                <option value="" disabled selected>Pilih Keterangan...</option>
-                <option value="perpus">perpus</option>
-                <option value="arsip">arsip</option>
-                <option value="psp">psp</option>
-                <option value="keuangan">keuangan</option>
+                <option value="" disabled selected>Pilih Bidang/Sub Bagian...</option>
+                <option value="Bidang Perpustakaan">Bidang Perpustakaan</option>
+                <option value="Bidang Arsip">Bidang Arsip</option>
+                <option value="Bidang PSP">Bidang PSP</option>
+                <option value="Sub Bagian KPE">Sub Bagian KPE</option>
+                <option value="Sub Bagian Umum dan Kepegawaian">Sub Bagian Umum dan Kepegawaian</option>
               </select>
             </div>
           </div>
@@ -325,7 +321,7 @@
     const formInput = document.getElementById('formInput');
 
     function bukaModalTambah() {
-      document.getElementById('modalTitle').innerText = "TAMBAH DATA BARU (LEMBAR <?php echo $currentPage; ?>)";
+      document.getElementById('modalTitle').innerText = "TAMBAH DATA (LEMBAR <?php echo $currentPage; ?>)";
       document.getElementById('form_mode').value = "tambah";
       document.getElementById('input_no').readOnly = false;
       formInput.reset();
@@ -335,17 +331,25 @@
     function bukaModalEdit(db_id, f_no, klas, plus) {
       document.getElementById('modalTitle').innerText = "EDIT DATA #" + f_no;
       document.getElementById('form_mode').value = "edit";
-      document.getElementById('input_no').value = db_id; 
+      document.getElementById('input_no').value = db_id;
       document.getElementById('input_no').readOnly = true;
       document.getElementById('input_klas').value = klas;
-      document.getElementById('input_plus').value = plus.toLowerCase();
+
+      // Cari option yang text-nya sama dengan data database
+      const select = document.getElementById('input_plus');
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === plus) {
+          select.selectedIndex = i;
+          break;
+        }
+      }
       modalCtrl.show();
     }
 
     function konfirmasiHapus(db_id, f_no) {
       Swal.fire({
         title: 'Hapus Data?',
-        text: "Data nomor " + f_no + " di lembar ini akan dihapus permanen.",
+        text: "Data nomor " + f_no + " akan dihapus permanen.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#000000',
@@ -361,24 +365,15 @@
 
     <?php if (isset($_GET['status'])): ?>
       const status = '<?php echo $_GET['status']; ?>';
-      const type = '<?php echo $_GET['type'] ?? ""; ?>';
-      const val = '<?php echo $_GET['val'] ?? ""; ?>';
-
       let config = { confirmButtonColor: '#000000', timer: 2000, showConfirmButton: false };
 
-      if (status === 'exists') {
-        config.title = 'Gagal Simpan!';
-        config.text = (type === 'nomor') ? `Nomor ${val} sudah terisi di lembar ini.` : `Kode klasifikasi ${val} sudah ada.`;
-        config.icon = 'error';
-        config.showConfirmButton = true;
-        config.timer = undefined;
+      if (status === 'success') {
+        config.title = 'Berhasil!';
+        config.text = 'Data berhasil disimpan.';
+        config.icon = 'success';
       } else if (status === 'deleted') {
         config.title = 'Terhapus!';
         config.text = 'Data berhasil dihapus.';
-        config.icon = 'success';
-      } else if (status === 'success') {
-        config.title = 'Berhasil!';
-        config.text = 'Data berhasil disimpan.';
         config.icon = 'success';
       }
 
