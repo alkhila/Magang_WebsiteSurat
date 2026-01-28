@@ -18,7 +18,7 @@ class Pengendali
 
     public function getByPage($page)
     {
-        $start = $page * 100;
+        $start = ($page * 100) + 1;
         $end = $start + 99;
         $query = "SELECT * FROM " . $this->table_name . " WHERE no_urut BETWEEN ? AND ? ORDER BY no_urut ASC";
         $stmt = $this->conn->prepare($query);

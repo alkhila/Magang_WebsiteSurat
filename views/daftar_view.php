@@ -27,7 +27,7 @@
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
       padding: 40px;
-      max-width: 1400px;
+      max-width: 1450px;
       margin: 0 auto;
       position: relative;
       border: 1px solid #cbd5e1;
@@ -62,7 +62,7 @@
     }
 
     .nav-side {
-      width: 120px;
+      width: 150px;
       display: flex;
     }
 
@@ -75,18 +75,18 @@
     }
 
     .nav-center {
-      min-width: 120px;
+      min-width: 150px;
       text-align: center;
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .btn-nav {
       background: #fff;
       border: 1px solid #000;
       color: #000;
-      padding: 4px 12px;
+      padding: 5px 15px;
       font-weight: 700;
-      font-size: 11px;
+      font-size: 12px;
       text-decoration: none;
       border-radius: 4px;
     }
@@ -99,6 +99,7 @@
     .table-responsive {
       border: 2px solid #000;
       border-radius: 4px;
+      overflow-x: auto;
     }
 
     .main-table {
@@ -109,7 +110,7 @@
 
     .main-table th {
       background-color: #f1f5f9;
-      padding: 10px 4px;
+      padding: 12px 5px;
       font-size: 12px;
       font-weight: 800;
       text-transform: uppercase;
@@ -118,7 +119,7 @@
     }
 
     .main-table td {
-      padding: 8px 5px;
+      padding: 8px 4px;
       font-size: 12px;
       border-bottom: 1px solid #000;
       border-right: 1px solid #000;
@@ -130,12 +131,8 @@
     .no-column {
       background-color: #f8fafc;
       font-weight: 700;
-      width: 30px;
+      width: 35px;
       text-align: center;
-    }
-
-    .klas-column {
-      width: 75px;
     }
 
     .tgl-column {
@@ -148,10 +145,6 @@
       white-space: normal;
       text-align: center !important;
       line-height: 1.3;
-    }
-
-    .aksi-column {
-      width: 85px;
     }
 
     .col-divider {
@@ -172,8 +165,8 @@
       background-color: var(--success-color);
       color: #fff;
       border: none;
-      padding: 2px 5px;
-      border-radius: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
       font-size: 9px;
       font-weight: 700;
     }
@@ -182,8 +175,8 @@
       background-color: var(--danger-color);
       color: #fff;
       border: none;
-      padding: 2px 5px;
-      border-radius: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
       font-size: 9px;
       font-weight: 700;
       margin-left: 2px;
@@ -211,7 +204,6 @@
 <body>
   <div class="main-card">
     <div class="page-info">HALAMAN : <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?></div>
-
     <div class="header-brand">
       <h2>Daftar Pengendali Surat Keluar</h2>
       <p>SPT ♥</p>
@@ -240,7 +232,7 @@
         <thead>
           <tr>
             <?php for ($k = 0; $k < 3; $k++): ?>
-              <th class="<?php echo ($k > 0) ? 'col-divider' : ''; ?>" width="30">No</th>
+              <th class="<?php echo ($k > 0) ? 'col-divider' : ''; ?>" width="35">No</th>
               <th width="75">Klasifikasi</th>
               <th width="80">Tanggal</th>
               <th width="120">Ket (+)</th>
@@ -250,26 +242,22 @@
         </thead>
         <tbody>
           <?php
-          $baseID = $currentPage * 100;
+          $baseOffset = ($currentPage * 100);
           for ($i = 0; $i < 34; $i++) {
             echo "<tr>";
-            $ranges = [['s' => 0, 'm' => 33], ['s' => 34, 'm' => 66], ['s' => 67, 'm' => 99]];
+            $ranges = [['s' => 1, 'm' => 34], ['s' => 35, 'm' => 67], ['s' => 68, 'm' => 100]];
             foreach ($ranges as $idx => $r) {
               $divider = ($idx > 0) ? 'col-divider' : '';
               $display_no = $r['s'] + $i;
-              $db_id = $baseID + $display_no;
+              $db_id = $baseOffset + $display_no;
 
               if ($display_no <= $r['m']) {
-                $f_no = str_pad($display_no, 2, "0", STR_PAD_LEFT);
+                $f_no = ($db_id < 100) ? str_pad($db_id, 2, "0", STR_PAD_LEFT) : $db_id;
                 $k = $data[$db_id]['k'] ?? '';
                 $p = $data[$db_id]['p'] ?? '';
                 $t = isset($data[$db_id]['t']) ? date('d-m-Y', strtotime($data[$db_id]['t'])) : '';
 
-                echo "<td class='no-column $divider'>$f_no</td>";
-                echo "<td class='klas-column'>$k</td>";
-                echo "<td class='tgl-column'>$t</td>";
-                echo "<td class='ket-column'>$p</td>";
-                echo "<td class='aksi-column d-print-none'>";
+                echo "<td class='no-column $divider'>$f_no</td><td>$k</td><td class='tgl-column'>$t</td><td class='ket-column'>$p</td><td class='d-print-none'>";
                 if (isset($data[$db_id])) {
                   echo "<button class='btn-action-edit' onclick='bukaModalEdit(\"$db_id\", \"$f_no\", \"$k\", \"$p\")'>EDIT</button>";
                   echo "<button class='btn-action-delete' onclick='konfirmasiHapus(\"$db_id\", \"$f_no\")'>HAPUS</button>";
@@ -290,7 +278,7 @@
   <div class="modal fade" id="modalData" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-        <div class="modal-header bg-dark text-white" style="border-radius: 12px 12px 0 0;">
+        <div class="modal-header bg-dark text-white">
           <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA</h6>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
@@ -298,8 +286,11 @@
           <input type="hidden" name="aksi" id="form_mode" value="tambah">
           <div class="modal-body p-4">
             <div class="mb-3">
-              <label class="form-label small fw-bold text-uppercase">Nomor Baris (00-99)</label>
-              <input type="number" name="no_urut" id="input_no" class="form-control" min="0" max="99" required>
+              <label class="form-label small fw-bold text-uppercase">
+                Nomor Baris (<?php echo ($currentPage * 100) + 1; ?>-<?php echo ($currentPage * 100) + 100; ?>)
+              </label>
+              <input type="number" name="no_urut" id="input_no" class="form-control"
+                min="<?php echo ($currentPage * 100) + 1; ?>" max="<?php echo ($currentPage * 100) + 100; ?>" required>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold text-uppercase">Klasifikasi</label>
@@ -330,13 +321,16 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const modalCtrl = new bootstrap.Modal(document.getElementById('modalData'));
+    const formInput = document.getElementById('formInput');
+
     function bukaModalTambah() {
       document.getElementById('modalTitle').innerText = "TAMBAH DATA (LEMBAR <?php echo $currentPage; ?>)";
       document.getElementById('form_mode').value = "tambah";
       document.getElementById('input_no').readOnly = false;
-      document.getElementById('formInput').reset();
+      formInput.reset();
       modalCtrl.show();
     }
+
     function bukaModalEdit(db_id, f_no, klas, plus) {
       document.getElementById('modalTitle').innerText = "EDIT DATA #" + f_no;
       document.getElementById('form_mode').value = "edit";
@@ -346,24 +340,51 @@
       document.getElementById('input_plus').value = plus;
       modalCtrl.show();
     }
+
     function konfirmasiHapus(db_id, f_no) {
-      Swal.fire({ title: 'Hapus Data?', text: "Data nomor " + f_no + " akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#000', confirmButtonText: 'Ya, Hapus!' }).then((result) => {
-        if (result.isConfirmed) { window.location.href = "index.php?hapus=" + db_id + "&page=<?php echo $currentPage; ?>"; }
+      Swal.fire({
+        title: 'Hapus Data?',
+        text: "Data nomor " + f_no + " akan dihapus.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#000',
+        confirmButtonText: 'Ya, Hapus!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "index.php?hapus=" + db_id + "&page=<?php echo $currentPage; ?>";
+        }
       });
     }
+
     <?php if (isset($_GET['status'])): ?>
       const status = '<?php echo $_GET['status']; ?>';
       const type = '<?php echo $_GET['type'] ?? ""; ?>';
       if (status === 'exists') {
         let pesan = "";
-        if (type === 'both') { pesan = `Ada 2 kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah ada.`; }
-        else if (type === 'nomor') { pesan = `Nomor urut <?php echo $_GET['val'] ?? ""; ?> sudah terisi di lembar ini.`; }
-        else { pesan = `Kode klasifikasi <?php echo $_GET['val'] ?? ""; ?> sudah ada.`; }
-        Swal.fire({ title: 'Gagal Simpan!', text: pesan, icon: 'error', confirmButtonColor: '#000' })
-          .then(() => { window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>"); });
+        if (type === 'both') {
+          pesan = `Ada 2 kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah ada.`;
+        } else if (type === 'nomor') {
+          pesan = `Nomor urut <?php echo $_GET['val'] ?? ""; ?> sudah terisi di lembar ini.`;
+        } else {
+          pesan = `Kode klasifikasi <?php echo $_GET['val'] ?? ""; ?> sudah ada.`;
+        }
+        Swal.fire({
+          title: 'Gagal Simpan!',
+          text: pesan,
+          icon: 'error',
+          confirmButtonColor: '#000'
+        }).then(() => {
+          window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>");
+        });
       } else {
-        Swal.fire({ title: 'Berhasil!', icon: 'success', timer: 2000, showConfirmButton: false })
-          .then(() => { window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>"); });
+        Swal.fire({
+          title: 'Berhasil!',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>");
+        });
       }
     <?php endif; ?>
   </script>
