@@ -423,11 +423,11 @@
       if (status === 'exists') {
         let pesan = "";
         if (type === 'both') {
-          pesan = `Terdapat kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah ada di tabel pengendali atau sisipan.`;
+          pesan = `Terdapat kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah digunakan.`;
         } else if (type === 'nomor') {
           pesan = `Terdapat kesalahan: Nomor urut <?php echo $_GET['val'] ?? ""; ?> sudah terisi.`;
         } else {
-          pesan = `Terdapat kesalahan: Kode klasifikasi <?php echo $_GET['val'] ?? ""; ?> sudah ada di tabel pengendali atau sisipan.`;
+          pesan = `Terdapat kesalahan: Kode klasifikasi <?php echo $_GET['val'] ?? ""; ?> sudah digunakan.`;
         }
         Swal.fire({
           title: 'Gagal Simpan!',
