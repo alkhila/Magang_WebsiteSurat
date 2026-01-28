@@ -18,16 +18,16 @@
     body {
       background-color: #f8fafc;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      color: #000000;
+      color: #000;
       padding: 40px 15px;
     }
 
     .main-card {
-      background: #ffffff;
+      background: #fff;
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
       padding: 40px;
-      max-width: 1280px;
+      max-width: 1400px;
       margin: 0 auto;
       position: relative;
       border: 1px solid #cbd5e1;
@@ -50,15 +50,8 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-bottom: 5px;
-      display: inline-block;
       border-bottom: 4px solid #000;
-    }
-
-    .header-brand p {
-      font-weight: 600;
-      font-size: 18px;
-      margin: 0;
+      display: inline-block;
     }
 
     .pagination-nav {
@@ -69,7 +62,7 @@
     }
 
     .nav-side {
-      width: 150px;
+      width: 120px;
       display: flex;
     }
 
@@ -82,21 +75,20 @@
     }
 
     .nav-center {
-      min-width: 150px;
+      min-width: 120px;
       text-align: center;
-      font-size: 18px;
+      font-size: 20px;
     }
 
     .btn-nav {
       background: #fff;
       border: 1px solid #000;
       color: #000;
-      padding: 5px 15px;
+      padding: 4px 12px;
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11px;
       text-decoration: none;
       border-radius: 4px;
-      transition: 0.2s;
     }
 
     .btn-nav:hover {
@@ -107,18 +99,18 @@
     .table-responsive {
       border: 2px solid #000;
       border-radius: 4px;
-      overflow: hidden;
     }
 
     .main-table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
     }
 
     .main-table th {
       background-color: #f1f5f9;
-      padding: 12px 8px;
-      font-size: 11px;
+      padding: 10px 4px;
+      font-size: 12px;
       font-weight: 800;
       text-transform: uppercase;
       border-bottom: 2px solid #000;
@@ -126,23 +118,44 @@
     }
 
     .main-table td {
-      padding: 10px 6px;
+      padding: 8px 5px;
       font-size: 12px;
       border-bottom: 1px solid #000;
       border-right: 1px solid #000;
       vertical-align: middle;
-      font-weight: 500;
       color: #000;
-    }
-
-    .col-divider {
-      border-left: 3px solid #000 !important;
+      word-wrap: break-word;
     }
 
     .no-column {
       background-color: #f8fafc;
       font-weight: 700;
-      width: 45px;
+      width: 30px;
+      text-align: center;
+    }
+
+    .klas-column {
+      width: 75px;
+    }
+
+    .tgl-column {
+      width: 80px;
+      white-space: nowrap;
+    }
+
+    .ket-column {
+      width: 120px;
+      white-space: normal;
+      text-align: center !important;
+      line-height: 1.3;
+    }
+
+    .aksi-column {
+      width: 85px;
+    }
+
+    .col-divider {
+      border-left: 3px solid #000 !important;
     }
 
     .btn-modern-add {
@@ -159,9 +172,9 @@
       background-color: var(--success-color);
       color: #fff;
       border: none;
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 9px;
       font-weight: 700;
     }
 
@@ -169,11 +182,11 @@
       background-color: var(--danger-color);
       color: #fff;
       border: none;
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 9px;
       font-weight: 700;
-      margin-left: 4px;
+      margin-left: 2px;
     }
 
     @media print {
@@ -183,7 +196,6 @@
 
       body {
         padding: 0;
-        background: white;
       }
 
       .main-card {
@@ -228,10 +240,11 @@
         <thead>
           <tr>
             <?php for ($k = 0; $k < 3; $k++): ?>
-              <th class="<?php echo ($k > 0) ? 'col-divider' : ''; ?>">No</th>
-              <th>Klasifikasi</th>
-              <th width="150">Ket (+)</th>
-              <th width="140" class="d-print-none">Aksi</th>
+              <th class="<?php echo ($k > 0) ? 'col-divider' : ''; ?>" width="30">No</th>
+              <th width="75">Klasifikasi</th>
+              <th width="80">Tanggal</th>
+              <th width="120">Ket (+)</th>
+              <th width="85" class="d-print-none">Aksi</th>
             <?php endfor; ?>
           </tr>
         </thead>
@@ -250,18 +263,20 @@
                 $f_no = str_pad($display_no, 2, "0", STR_PAD_LEFT);
                 $k = $data[$db_id]['k'] ?? '';
                 $p = $data[$db_id]['p'] ?? '';
+                $t = isset($data[$db_id]['t']) ? date('d-m-Y', strtotime($data[$db_id]['t'])) : '';
 
                 echo "<td class='no-column $divider'>$f_no</td>";
-                echo "<td>$k</td>";
-                echo "<td>$p</td>";
-                echo "<td class='d-print-none'>";
+                echo "<td class='klas-column'>$k</td>";
+                echo "<td class='tgl-column'>$t</td>";
+                echo "<td class='ket-column'>$p</td>";
+                echo "<td class='aksi-column d-print-none'>";
                 if (isset($data[$db_id])) {
                   echo "<button class='btn-action-edit' onclick='bukaModalEdit(\"$db_id\", \"$f_no\", \"$k\", \"$p\")'>EDIT</button>";
                   echo "<button class='btn-action-delete' onclick='konfirmasiHapus(\"$db_id\", \"$f_no\")'>HAPUS</button>";
                 }
                 echo "</td>";
               } else {
-                echo "<td class='no-column $divider'></td><td></td><td></td><td class='d-print-none'></td>";
+                echo "<td class='no-column $divider'></td><td></td><td></td><td></td><td class='d-print-none'></td>";
               }
             }
             echo "</tr>";
@@ -284,16 +299,14 @@
           <div class="modal-body p-4">
             <div class="mb-3">
               <label class="form-label small fw-bold text-uppercase">Nomor Baris (00-99)</label>
-              <input type="number" name="no_urut" id="input_no" class="form-control" placeholder="00-99" min="0"
-                max="99" required>
+              <input type="number" name="no_urut" id="input_no" class="form-control" min="0" max="99" required>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold text-uppercase">Klasifikasi</label>
-              <input type="text" name="klas" id="input_klas" class="form-control"
-                placeholder="Masukkan kode klasifikasi..." required>
+              <input type="text" name="klas" id="input_klas" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold text-uppercase">Keterangan Bidang/Sub Bagian</label>
+              <label class="form-label small fw-bold text-uppercase">Keterangan</label>
               <select name="plus" id="input_plus" class="form-select" required>
                 <option value="" disabled selected>Pilih Bidang/Sub Bagian...</option>
                 <option value="Bidang Perpustakaan">Bidang Perpustakaan</option>
@@ -315,71 +328,43 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   <script>
     const modalCtrl = new bootstrap.Modal(document.getElementById('modalData'));
-    const formInput = document.getElementById('formInput');
-
     function bukaModalTambah() {
       document.getElementById('modalTitle').innerText = "TAMBAH DATA (LEMBAR <?php echo $currentPage; ?>)";
       document.getElementById('form_mode').value = "tambah";
       document.getElementById('input_no').readOnly = false;
-      formInput.reset();
+      document.getElementById('formInput').reset();
       modalCtrl.show();
     }
-
     function bukaModalEdit(db_id, f_no, klas, plus) {
       document.getElementById('modalTitle').innerText = "EDIT DATA #" + f_no;
       document.getElementById('form_mode').value = "edit";
       document.getElementById('input_no').value = db_id;
       document.getElementById('input_no').readOnly = true;
       document.getElementById('input_klas').value = klas;
-
-      // Cari option yang text-nya sama dengan data database
-      const select = document.getElementById('input_plus');
-      for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].value === plus) {
-          select.selectedIndex = i;
-          break;
-        }
-      }
+      document.getElementById('input_plus').value = plus;
       modalCtrl.show();
     }
-
     function konfirmasiHapus(db_id, f_no) {
-      Swal.fire({
-        title: 'Hapus Data?',
-        text: "Data nomor " + f_no + " akan dihapus permanen.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#000000',
-        cancelButtonColor: '#ef4444',
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = "index.php?hapus=" + db_id + "&page=<?php echo $currentPage; ?>";
-        }
+      Swal.fire({ title: 'Hapus Data?', text: "Data nomor " + f_no + " akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#000', confirmButtonText: 'Ya, Hapus!' }).then((result) => {
+        if (result.isConfirmed) { window.location.href = "index.php?hapus=" + db_id + "&page=<?php echo $currentPage; ?>"; }
       });
     }
-
     <?php if (isset($_GET['status'])): ?>
       const status = '<?php echo $_GET['status']; ?>';
-      let config = { confirmButtonColor: '#000000', timer: 2000, showConfirmButton: false };
-
-      if (status === 'success') {
-        config.title = 'Berhasil!';
-        config.text = 'Data berhasil disimpan.';
-        config.icon = 'success';
-      } else if (status === 'deleted') {
-        config.title = 'Terhapus!';
-        config.text = 'Data berhasil dihapus.';
-        config.icon = 'success';
+      const type = '<?php echo $_GET['type'] ?? ""; ?>';
+      if (status === 'exists') {
+        let pesan = "";
+        if (type === 'both') { pesan = `Ada 2 kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah ada.`; }
+        else if (type === 'nomor') { pesan = `Nomor urut <?php echo $_GET['val'] ?? ""; ?> sudah terisi di lembar ini.`; }
+        else { pesan = `Kode klasifikasi <?php echo $_GET['val'] ?? ""; ?> sudah ada.`; }
+        Swal.fire({ title: 'Gagal Simpan!', text: pesan, icon: 'error', confirmButtonColor: '#000' })
+          .then(() => { window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>"); });
+      } else {
+        Swal.fire({ title: 'Berhasil!', icon: 'success', timer: 2000, showConfirmButton: false })
+          .then(() => { window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>"); });
       }
-
-      Swal.fire(config).then(() => {
-        window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>");
-      });
     <?php endif; ?>
   </script>
 </body>
