@@ -135,18 +135,6 @@
       text-align: center;
     }
 
-    .tgl-column {
-      width: 80px;
-      white-space: nowrap;
-    }
-
-    .ket-column {
-      width: 120px;
-      white-space: normal;
-      text-align: center !important;
-      line-height: 1.3;
-    }
-
     .col-divider {
       border-left: 3px solid #000 !important;
     }
@@ -183,20 +171,9 @@
     }
 
     @media print {
-      .d-print-none {
-        display: none !important;
-      }
-
-      body {
-        padding: 0;
-      }
-
-      .main-card {
-        box-shadow: none;
-        border: none;
-        padding: 0;
-        max-width: 100%;
-      }
+      .d-print-none { display: none !important; }
+      body { padding: 0; }
+      .main-card { box-shadow: none; border: none; padding: 0; max-width: 100%; }
     }
   </style>
 </head>
@@ -224,6 +201,7 @@
     </div>
 
     <div class="d-flex justify-content-end mb-4 d-print-none">
+      <button class="btn btn-outline-dark me-2 fw-bold" onclick="bukaModalSisipan()" style="font-size: 12px; border-radius: 6px;">+ SISIPAN</button>
       <button class="btn-modern-add" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
     </div>
 
@@ -242,25 +220,23 @@
         </thead>
         <tbody>
           <?php
-          $baseOffset = ($currentPage * 100);
+          $startNumber = ($currentPage * 100) + 1;
           for ($i = 0; $i < 34; $i++) {
             echo "<tr>";
-            $ranges = [['s' => 1, 'm' => 34], ['s' => 35, 'm' => 67], ['s' => 68, 'm' => 100]];
+            $ranges = [['o' => 0, 'm' => 33], ['o' => 34, 'm' => 66], ['o' => 67, 'm' => 99]];
             foreach ($ranges as $idx => $r) {
               $divider = ($idx > 0) ? 'col-divider' : '';
-              $display_no = $r['s'] + $i;
-              $db_id = $baseOffset + $display_no;
+              $current_no = $startNumber + $r['o'] + $i;
 
-              if ($display_no <= $r['m']) {
-                $f_no = ($db_id < 100) ? str_pad($db_id, 2, "0", STR_PAD_LEFT) : $db_id;
-                $k = $data[$db_id]['k'] ?? '';
-                $p = $data[$db_id]['p'] ?? '';
-                $t = isset($data[$db_id]['t']) ? date('d-m-Y', strtotime($data[$db_id]['t'])) : '';
+              if (($r['o'] + $i) <= 99) {
+                $k = $data[$current_no]['k'] ?? '';
+                $p = $data[$current_no]['p'] ?? '';
+                $t = isset($data[$current_no]['t']) ? date('d-m-Y', strtotime($data[$current_no]['t'])) : '';
 
-                echo "<td class='no-column $divider'>$f_no</td><td>$k</td><td class='tgl-column'>$t</td><td class='ket-column'>$p</td><td class='d-print-none'>";
-                if (isset($data[$db_id])) {
-                  echo "<button class='btn-action-edit' onclick='bukaModalEdit(\"$db_id\", \"$f_no\", \"$k\", \"$p\")'>EDIT</button>";
-                  echo "<button class='btn-action-delete' onclick='konfirmasiHapus(\"$db_id\", \"$f_no\")'>HAPUS</button>";
+                echo "<td class='no-column $divider'>$current_no</td><td>$k</td><td style='width: 80px; white-space: nowrap;'>$t</td><td style='width: 120px; text-align: center !important;'>$p</td><td class='d-print-none'>";
+                if (isset($data[$current_no])) {
+                  echo "<button class='btn-action-edit' onclick='bukaModalEdit(\"$current_no\", \"$current_no\", \"$k\", \"$p\", false)'>EDIT</button>";
+                  echo "<button class='btn-action-delete' onclick='konfirmasiHapus(\"$current_no\", \"$current_no\", false)'>HAPUS</button>";
                 }
                 echo "</td>";
               } else {
@@ -273,6 +249,35 @@
         </tbody>
       </table>
     </div>
+
+    <?php if (!empty($sisipanData)): ?>
+    <div class="mt-5">
+      <h5 class="fw-bold mb-3" style="font-size: 14px; text-transform: uppercase;">Nomor Sisipan (Lembar <?php echo $currentPage; ?>)</h5>
+      <div class="table-responsive">
+        <table class="main-table text-center">
+          <thead>
+            <tr style="background-color: #fef2f2;">
+              <th width="100">No. Sisipan</th><th>Klasifikasi</th><th>Tanggal</th><th>Ket (+)</th><th width="140" class="d-print-none">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($sisipanData as $s): ?>
+            <tr>
+              <td class="fw-bold"><?php echo $s['no_urut']; ?></td>
+              <td><?php echo $s['klas']; ?></td>
+              <td><?php echo date('d-m-Y', strtotime($s['created_at'])); ?></td>
+              <td><?php echo $s['plus']; ?></td>
+              <td class="d-print-none">
+                <button class="btn-action-edit" onclick="bukaModalEdit('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', '<?php echo $s['klas']; ?>', '<?php echo $s['plus']; ?>', true)">EDIT</button>
+                <button class="btn-action-delete" onclick="konfirmasiHapus('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', true)">HAPUS</button>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <?php endif; ?>
   </div>
 
   <div class="modal fade" id="modalData" tabindex="-1">
@@ -284,13 +289,11 @@
         </div>
         <form id="formInput" action="index.php?page=<?php echo $currentPage; ?>" method="POST">
           <input type="hidden" name="aksi" id="form_mode" value="tambah">
+          <input type="hidden" name="is_sisipan" id="is_sisipan" value="0">
           <div class="modal-body p-4">
             <div class="mb-3">
-              <label class="form-label small fw-bold text-uppercase">
-                Nomor Baris (<?php echo ($currentPage * 100) + 1; ?>-<?php echo ($currentPage * 100) + 100; ?>)
-              </label>
-              <input type="number" name="no_urut" id="input_no" class="form-control"
-                min="<?php echo ($currentPage * 100) + 1; ?>" max="<?php echo ($currentPage * 100) + 100; ?>" required>
+              <label class="form-label small fw-bold text-uppercase" id="label_no">Nomor Urut</label>
+              <input type="number" name="no_urut" id="input_no" class="form-control" required>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold text-uppercase">Klasifikasi</label>
@@ -326,22 +329,41 @@
     function bukaModalTambah() {
       document.getElementById('modalTitle').innerText = "TAMBAH DATA (LEMBAR <?php echo $currentPage; ?>)";
       document.getElementById('form_mode').value = "tambah";
-      document.getElementById('input_no').readOnly = false;
+      document.getElementById('is_sisipan').value = "0";
+      const inputNo = document.getElementById('input_no');
+      inputNo.readOnly = false;
+      inputNo.min = "<?php echo ($currentPage * 100) + 1; ?>";
+      inputNo.max = "<?php echo ($currentPage * 100) + 100; ?>";
       formInput.reset();
       modalCtrl.show();
     }
 
-    function bukaModalEdit(db_id, f_no, klas, plus) {
+    function bukaModalSisipan() {
+      document.getElementById('modalTitle').innerText = "TAMBAH SISIPAN (LEMBAR <?php echo $currentPage; ?>)";
+      document.getElementById('form_mode').value = "tambah";
+      document.getElementById('is_sisipan').value = "1";
+      const inputNo = document.getElementById('input_no');
+      inputNo.readOnly = false;
+      inputNo.min = "<?php echo ($currentPage * 100) + 1; ?>";
+      inputNo.max = "<?php echo ($currentPage * 100) + 100; ?>";
+      formInput.reset();
+      modalCtrl.show();
+    }
+
+    function bukaModalEdit(db_id, f_no, klas, plus, sisipan = false) {
       document.getElementById('modalTitle').innerText = "EDIT DATA #" + f_no;
       document.getElementById('form_mode').value = "edit";
-      document.getElementById('input_no').value = db_id;
-      document.getElementById('input_no').readOnly = true;
+      document.getElementById('is_sisipan').value = sisipan ? "1" : "0";
+      const inputNo = document.getElementById('input_no');
+      inputNo.value = db_id;
+      inputNo.readOnly = true;
       document.getElementById('input_klas').value = klas;
       document.getElementById('input_plus').value = plus;
       modalCtrl.show();
     }
 
-    function konfirmasiHapus(db_id, f_no) {
+    function konfirmasiHapus(db_id, f_no, sisipan = false) {
+      const url = `index.php?hapus=${db_id}&page=<?php echo $currentPage; ?>${sisipan ? '&sisipan=1' : ''}`;
       Swal.fire({
         title: 'Hapus Data?',
         text: "Data nomor " + f_no + " akan dihapus.",
@@ -349,20 +371,17 @@
         showCancelButton: true,
         confirmButtonColor: '#000',
         confirmButtonText: 'Ya, Hapus!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = "index.php?hapus=" + db_id + "&page=<?php echo $currentPage; ?>";
-        }
-      });
+      }).then((result) => { if (result.isConfirmed) window.location.href = url; });
     }
 
     <?php if (isset($_GET['status'])): ?>
       const status = '<?php echo $_GET['status']; ?>';
       const type = '<?php echo $_GET['type'] ?? ""; ?>';
+      
       if (status === 'exists') {
         let pesan = "";
         if (type === 'both') {
-          pesan = `Ada 2 kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah ada.`;
+          pesan = `Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah ada.`;
         } else if (type === 'nomor') {
           pesan = `Nomor urut <?php echo $_GET['val'] ?? ""; ?> sudah terisi di lembar ini.`;
         } else {
@@ -377,8 +396,21 @@
           window.history.replaceState({}, document.title, window.location.pathname + "?page=<?php echo $currentPage; ?>");
         });
       } else {
+        let titleText = "Berhasil!";
+        let detailText = "";
+        
+        // Custom Pesan Berdasarkan Status URL
+        if (status === 'success') {
+          detailText = "Data Berhasil Ditambahkan";
+        } else if (status === 'updated') {
+          detailText = "Data Berhasil Diubah";
+        } else if (status === 'deleted') {
+          detailText = "Data Berhasil Dihapus";
+        }
+        
         Swal.fire({
-          title: 'Berhasil!',
+          title: titleText,
+          text: detailText,
           icon: 'success',
           timer: 2000,
           showConfirmButton: false
