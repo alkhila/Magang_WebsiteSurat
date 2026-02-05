@@ -287,7 +287,7 @@
     <?php if (!empty($sisipanData)): ?>
     <div class="mt-5">
       <h5 class="fw-bold mb-3" style="font-size: 14px; text-transform: uppercase;">Nomor Sisipan (Lembar <?php echo $currentPage; ?>)</h5>
-      <div class="table-responsive" style="border-color: #ef4444;">
+      <div class="table-responsive">
         <table class="main-table text-center">
           <thead>
             <tr style="background-color: #fef2f2;">
@@ -297,7 +297,7 @@
           <tbody>
             <?php foreach ($sisipanData as $s): ?>
             <tr>
-              <td class="fw-bold" style="color: #ef4444;"><?php echo $s['no_urut']; ?></td>
+              <td class="fw-bold"><?php echo $s['no_urut']; ?></td>
               <td><?php echo $s['klas']; ?></td>
               <td><?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?></td>
               <td><?php echo $s['plus']; ?></td>
@@ -437,17 +437,6 @@
       const status = '<?php echo $_GET['status']; ?>';
       
       if (status === 'exists') {
-<<<<<<< HEAD
-=======
-        let pesan = "";
-        if (type === 'both') {
-          pesan = `Terdapat kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah digunakan.`;
-        } else if (type === 'nomor') {
-          pesan = `Terdapat kesalahan: Nomor urut <?php echo $_GET['val'] ?? ""; ?> sudah terisi.`;
-        } else {
-          pesan = `Terdapat kesalahan: Kode klasifikasi <?php echo $_GET['val'] ?? ""; ?> sudah digunakan.`;
-        }
->>>>>>> a06e7ea29fb3b2014cdaf0c460db12ae5c3fef8a
         Swal.fire({
           title: 'Gagal Menyimpan Data!',
           text: 'Maaf, Nomor Sisipan "<?php echo $_GET['val'] ?? ""; ?>" sudah terdaftar di sistem. Mohon gunakan nomor urut yang berbeda.',
