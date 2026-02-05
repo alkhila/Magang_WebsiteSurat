@@ -437,6 +437,17 @@
       const status = '<?php echo $_GET['status']; ?>';
       
       if (status === 'exists') {
+<<<<<<< HEAD
+=======
+        let pesan = "";
+        if (type === 'both') {
+          pesan = `Terdapat kesalahan: Nomor urut <?php echo $_GET['val_no'] ?? ""; ?> sudah terisi dan kode klasifikasi <?php echo $_GET['val_klas'] ?? ""; ?> sudah digunakan.`;
+        } else if (type === 'nomor') {
+          pesan = `Terdapat kesalahan: Nomor urut <?php echo $_GET['val'] ?? ""; ?> sudah terisi.`;
+        } else {
+          pesan = `Terdapat kesalahan: Kode klasifikasi <?php echo $_GET['val'] ?? ""; ?> sudah digunakan.`;
+        }
+>>>>>>> a06e7ea29fb3b2014cdaf0c460db12ae5c3fef8a
         Swal.fire({
           title: 'Gagal Menyimpan Data!',
           text: 'Maaf, Nomor Sisipan "<?php echo $_GET['val'] ?? ""; ?>" sudah terdaftar di sistem. Mohon gunakan nomor urut yang berbeda.',
