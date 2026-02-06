@@ -1,10 +1,11 @@
 <?php
-include_once 'controllers/Controller.php';
-$controller = new PengendaliController();
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 0;
+include_once 'controllers/controller.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['hapus'])) {
-    $controller->handleRequest();
-} else {
-    $controller->index($page);
-}
+$controller = new PengendaliController();
+
+// PROSES LOGIKA (Login/Logout/CRUD) DULU
+$controller->handleRequest();
+
+// BARU TAMPILKAN HALAMAN
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 0;
+$controller->index($page);
