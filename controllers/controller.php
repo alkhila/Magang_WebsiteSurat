@@ -47,7 +47,7 @@ class PengendaliController
             exit();
         }
 
-        // --- CRUD ASLI (Jangan diubah) ---
+        // --- CRUD LOGIC ---
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi'])) {
             $aksi = $_POST['aksi'];
             $klas = $_POST['klas'];
@@ -58,6 +58,11 @@ class PengendaliController
             if ($aksi == 'tambah') {
                 if ($is_sisipan) {
                     $no_urut = $_POST['no_urut'];
+                    // CEK DUPLIKAT NOMOR SISIPAN
+                    if ($this->model->getSisipanById($no_urut)) {
+                        header("Location: index.php?page=$page&status=exists&val=$no_urut");
+                        exit();
+                    }
                     $this->model->createSisipan($no_urut, $klas, $plus, $tgl);
                 } else {
                     $no_urut = $this->model->getNextAvailableNo($page);
