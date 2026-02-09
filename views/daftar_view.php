@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Daftar Pengendali Surat Keluar</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet">
@@ -141,7 +142,7 @@
       border-left: 3px solid #000 !important;
     }
 
-    /* CUSTOM HOVER */
+    /* BUTTONS HOVER */
     .btn-modern-add {
       background-color: var(--btn-tambah-bg);
       color: #fff;
@@ -155,6 +156,7 @@
 
     .btn-modern-add:hover {
       background-color: var(--btn-hover-bg) !important;
+      color: #fff !important;
     }
 
     .btn-sisipan-custom {
@@ -187,6 +189,7 @@
     .btn-export-custom:hover {
       background-color: #fff;
       color: #000;
+      border: 1px solid #000;
     }
 
     .btn-action-edit {
@@ -209,11 +212,11 @@
       font-weight: 700;
     }
 
-    /* CSS KHUSUS POPUP CETAK AGAR MIRIP MODAL BOOTSTRAP */
+    /* POPUP CETAK STYLE */
     .swal2-popup.my-swal {
       padding: 0 !important;
       border-radius: 12px !important;
-      width: 400px;
+      width: 400px !important;
     }
 
     .swal2-title.my-swal-title {
@@ -226,7 +229,6 @@
       text-transform: uppercase !important;
       border-radius: 12px 12px 0 0 !important;
       text-align: left !important;
-      /* Membuat Judul Rata Kiri */
     }
 
     .swal2-html-container.my-swal-content {
@@ -235,10 +237,9 @@
     }
 
     .swal2-actions {
-      padding-bottom: 20px !important;
+      padding-bottom: 25px !important;
+      margin-top: 10px !important;
     }
-
-    /* Jarak bawah tombol */
 
     @media print {
       @page {
@@ -253,10 +254,14 @@
         zoom: 75%;
       }
 
+      /* Pastikan main card dan table tidak tersembunyi */
       .main-card {
         padding: 0 !important;
         border: none !important;
         box-shadow: none !important;
+        max-width: 100% !important;
+        display: block !important;
+        visibility: visible !important;
       }
 
       .d-print-none,
@@ -281,6 +286,8 @@
       .main-table {
         border: 2px solid #000 !important;
         width: 100% !important;
+        display: table !important;
+        visibility: visible !important;
       }
 
       .main-table th,
@@ -294,7 +301,7 @@
 
 <body>
   <div class="container-fluid d-print-none top-admin-bar mb-3" style="max-width: 1450px;">
-    <div class="d-flex justify-content-end align-items-center">
+    <div class="d-flex justify-content-end align-items-center p-0">
       <?php if (isset($_SESSION['admin_id'])): ?>
         <span class="small fw-bold me-3 text-uppercase">Admin: <?php echo $_SESSION['admin_user']; ?></span>
         <button onclick="pilihRentangCetak()" class="btn-export-custom me-2">EXPORT PDF</button>
@@ -435,11 +442,17 @@
           <div class="modal-body p-4">
             <div class="mb-3">
               <label class="form-label small fw-bold text-uppercase">USERNAME</label>
-              <input type="text" name="username" class="form-control" required>
+              <input type="text" name="username" class="form-control shadow-none" required>
             </div>
             <div class="mb-0">
               <label class="form-label small fw-bold text-uppercase">PASSWORD</label>
-              <input type="password" name="password" class="form-control" required>
+              <div class="input-group">
+                <input type="password" name="password" id="loginPassword" class="form-control border-end-0 shadow-none"
+                  required>
+                <span class="input-group-text border-start-0" onclick="togglePassword()">
+                  <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                </span>
+              </div>
             </div>
           </div>
           <div class="modal-footer border-0">
@@ -465,15 +478,15 @@
           <div class="modal-body p-4">
             <div class="mb-3" id="container_no_sisipan" style="display:none;"><label
                 class="form-label small fw-bold text-uppercase">Nomor Sisipan</label><input type="text"
-                id="display_no_sisipan" class="form-control" oninput="syncNoSisipan(this.value)"></div>
+                id="display_no_sisipan" class="form-control shadow-none" oninput="syncNoSisipan(this.value)"></div>
             <div class="mb-3" id="container_tgl" style="display:none;"><label
                 class="form-label small fw-bold text-uppercase">Tanggal Surat</label><input type="date"
-                name="tanggal_manual" id="input_tgl" class="form-control"></div>
+                name="tanggal_manual" id="input_tgl" class="form-control shadow-none"></div>
             <div class="mb-3"><label class="form-label small fw-bold text-uppercase">Klasifikasi</label><input
-                type="text" name="klas" id="input_klas" class="form-control" required></div>
+                type="text" name="klas" id="input_klas" class="form-control shadow-none" required></div>
             <div class="mb-3">
               <label class="form-label small fw-bold text-uppercase">Keterangan</label>
-              <select name="plus" id="input_plus" class="form-select" required>
+              <select name="plus" id="input_plus" class="form-select shadow-none" required>
                 <option value="" disabled selected>Pilih Bidang/Sub Bagian...</option>
                 <option value="Bidang Perpustakaan">Bidang Perpustakaan</option>
                 <option value="Bidang Arsip">Bidang Arsip</option>
@@ -498,24 +511,29 @@
     const modalCtrl = new bootstrap.Modal(document.getElementById('modalData'));
     const formInput = document.getElementById('formInput');
 
+    function togglePassword() {
+      const passwordInput = document.getElementById('loginPassword');
+      const toggleIcon = document.getElementById('toggleIcon');
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
+      } else {
+        passwordInput.type = "password";
+        toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
+      }
+    }
+
     function pilihRentangCetak() {
       Swal.fire({
         title: 'RENTANG WAKTU CETAK',
         customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content' },
         html: `
-          <div class="p-4 pb-0 text-start"> <div class="mb-4">
-              <label class="form-label small fw-bold text-uppercase">Tanggal Mulai</label>
-              <input type="date" id="swal_start" class="form-control shadow-none py-2">
-            </div>
-            <div class="mb-4"> <label class="form-label small fw-bold text-uppercase">Tanggal Selesai</label>
-              <input type="date" id="swal_end" class="form-control shadow-none py-2">
-            </div>
+          <div class="p-4 pb-0 text-start">
+            <div class="mb-4"><label class="form-label small fw-bold text-uppercase">Tanggal Mulai</label><input type="date" id="swal_start" class="form-control shadow-none py-2"></div>
+            <div class="mb-2"><label class="form-label small fw-bold text-uppercase">Tanggal Selesai</label><input type="date" id="swal_end" class="form-control shadow-none py-2"></div>
           </div>
         `,
-        showCancelButton: true,
-        confirmButtonText: 'SIMPAN',
-        cancelButtonText: 'BATAL',
-        buttonsStyling: false,
+        showCancelButton: true, confirmButtonText: 'SIMPAN', cancelButtonText: 'BATAL', buttonsStyling: false,
         didOpen: () => {
           Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
           Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark';
@@ -533,7 +551,10 @@
       const body = document.body;
       body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
       let hasDataCol1 = false, hasDataCol2 = false, hasDataCol3 = false;
+
+      // Tampilkan semua untuk pengecekan
       document.querySelectorAll('td[data-date]').forEach(td => td.style.visibility = "visible");
+
       document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
         let rowHasAnyData = false;
         tr.querySelectorAll('td[data-date]').forEach(td => {
@@ -544,21 +565,30 @@
             if (td.classList.contains('col-group-1')) hasDataCol1 = true;
             if (td.classList.contains('col-group-2')) hasDataCol2 = true;
             if (td.classList.contains('col-group-3')) hasDataCol3 = true;
-          } else { td.innerText = ""; }
+          } else {
+            td.innerText = ""; // Kosongkan teks agar tidak muncul di print
+          }
         });
         if (!rowHasAnyData) tr.classList.add('print-hidden-row');
         else tr.classList.remove('print-hidden-row');
       });
+
       document.querySelectorAll('#tableSisipan tbody tr').forEach(tr => {
         const date = tr.getAttribute('data-date');
         if (date >= start && date <= end) tr.classList.remove('print-hidden-row');
         else tr.classList.add('print-hidden-row');
       });
+
       if (!hasDataCol1) body.classList.add('hide-col-1');
       if (!hasDataCol2) body.classList.add('hide-col-2');
       if (!hasDataCol3) body.classList.add('hide-col-3');
-      window.print();
-      setTimeout(() => { location.reload(); }, 1500);
+
+      // Gunakan timeout lebih lama agar browser sempat merender DOM sebelum memanggil dialog print
+      setTimeout(() => {
+        window.print();
+        // Reload setelah jeda print untuk mengembalikan tampilan normal
+        setTimeout(() => { location.reload(); }, 500);
+      }, 1000);
     }
 
     function syncNoSisipan(val) { document.getElementById('input_no').value = val; }
@@ -566,17 +596,16 @@
     function bukaModalSisipan() { document.getElementById('modalTitle').innerText = "TAMBAH SISIPAN"; document.getElementById('form_mode').value = "tambah"; document.getElementById('is_sisipan').value = "1"; document.getElementById('container_no_sisipan').style.display = "block"; document.getElementById('container_tgl').style.display = "block"; formInput.reset(); modalCtrl.show(); }
     function bukaModalEdit(id, f_no, klas, plus, tgl, sisipan = false) { document.getElementById('modalTitle').innerText = "EDIT DATA NOMOR " + f_no; document.getElementById('form_mode').value = "edit"; document.getElementById('is_sisipan').value = sisipan ? "1" : "0"; document.getElementById('input_no').value = id; document.getElementById('container_no_sisipan').style.display = "none"; document.getElementById('container_tgl').style.display = sisipan ? "block" : "none"; document.getElementById('input_klas').value = klas; document.getElementById('input_plus').value = plus; if (sisipan) document.getElementById('input_tgl').value = tgl; modalCtrl.show(); }
     function konfirmasiHapus(db_id, f_no, sisipan = false) { Swal.fire({ title: 'Hapus Data?', text: "Data nomor " + f_no + " akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#000', confirmButtonText: 'Ya, Hapus!' }).then((result) => { if (result.isConfirmed) window.location.href = `index.php?hapus=${db_id}&page=<?php echo $currentPage; ?>${sisipan ? '&sisipan=1' : ''}`; }); }
-    function konfirmasiLogout() { Swal.fire({ title: 'Logout dari Admin?', text: "Anda akan keluar dari sesi admin.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal' }).then((result) => { if (result.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&logout=1"; } }); }
+    function konfirmasiLogout() { Swal.fire({ title: 'Logout?', text: "Anda akan keluar.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal' }).then((result) => { if (result.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&logout=1"; } }); }
 
     <?php if (isset($_GET['status'])): ?>
       const status = '<?php echo $_GET['status']; ?>';
-      const val = '<?php echo isset($_GET['val']) ? $_GET['val'] : ""; ?>';
-      if (status === 'exists') Swal.fire({ title: 'Nomor Duplikat!', text: 'Nomor sisipan ' + val + ' sudah ada.', icon: 'error' });
+      if (status === 'exists') Swal.fire({ title: 'Nomor Duplikat!', text: 'Nomor sisipan sudah ada.', icon: 'error' });
       if (status === 'login_success') Swal.fire('Berhasil!', 'Selamat datang Admin.', 'success');
       if (status === 'login_failed') Swal.fire('Gagal!', 'Username atau Password salah.', 'error');
-      if (status === 'success') Swal.fire('Berhasil!', 'Data baru telah disimpan.', 'success');
-      if (status === 'updated') Swal.fire('Berhasil!', 'Data telah diperbarui.', 'success');
-      if (status === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
+      if (status === 'success') Swal.fire('Berhasil!', 'Data disimpan.', 'success');
+      if (status === 'updated') Swal.fire('Berhasil!', 'Data diperbarui.', 'success');
+      if (status === 'deleted') Swal.fire('Dihapus!', 'Data dihapus.', 'success');
     <?php endif; ?>
   </script>
 </body>
