@@ -15,6 +15,8 @@
       --danger-color: #ef4444;
       --btn-tambah-bg: #0d6efd;
       --btn-sisipan-bg: #ffc107;
+      --btn-hover-bg: #5a7d9a;
+      --btn-sisipan-hover: #d6b55d;
     }
 
     body {
@@ -56,6 +58,7 @@
       display: inline-block;
     }
 
+    /* PAGINATION & BUTTON NAV */
     .pagination-nav {
       margin-bottom: 30px;
       display: flex;
@@ -63,19 +66,36 @@
       justify-content: center;
     }
 
-    .btn-nav {
+    .nav-side {
+      width: 150px;
+      display: flex;
+    }
+
+    .nav-side.left {
+      justify-content: flex-end;
+    }
+
+    .nav-side.right {
+      justify-content: flex-start;
+    }
+
+    .nav-center {
+      min-width: 150px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .btn-outline-black {
       background: #fff;
       border: 1px solid #000;
       color: #000;
-      padding: 5px 15px;
       font-weight: 700;
-      font-size: 12px;
       text-decoration: none;
       border-radius: 4px;
       transition: all 0.3s ease;
     }
 
-    .btn-nav:hover {
+    .btn-outline-black:hover {
       background: #000;
       color: #fff;
     }
@@ -121,7 +141,7 @@
       border-left: 3px solid #000 !important;
     }
 
-    /* TOMBOL TAMBAH & HOVER */
+    /* CUSTOM HOVER */
     .btn-modern-add {
       background-color: var(--btn-tambah-bg);
       color: #fff;
@@ -130,16 +150,13 @@
       font-weight: 700;
       font-size: 12px;
       border-radius: 6px;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
 
     .btn-modern-add:hover {
-      background-color: #5a7d9a;
-      /* Biru keabu-abuan */
-      color: #fff;
+      background-color: var(--btn-hover-bg) !important;
     }
 
-    /* TOMBOL SISIPAN & HOVER */
     .btn-sisipan-custom {
       background-color: var(--btn-sisipan-bg);
       border: 1px solid #e0a800;
@@ -148,13 +165,28 @@
       font-weight: 700;
       font-size: 12px;
       border-radius: 6px;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
 
     .btn-sisipan-custom:hover {
-      background-color: #d6b55d;
-      /* Kuning keabu-abuan */
-      border-color: #bfa14b;
+      background-color: var(--btn-sisipan-hover) !important;
+      color: #000 !important;
+    }
+
+    .btn-export-custom {
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #000;
+      padding: 5px 15px;
+      font-weight: 700;
+      font-size: 11px;
+      border-radius: 4px;
+      transition: 0.3s ease;
+    }
+
+    .btn-export-custom:hover {
+      background-color: #fff;
+      color: #000;
     }
 
     .btn-action-edit {
@@ -175,10 +207,39 @@
       border-radius: 4px;
       font-size: 9px;
       font-weight: 700;
-      margin-left: 2px;
     }
 
-    /* CSS PRINT PORTRAIT A4 */
+    /* CSS KHUSUS POPUP CETAK AGAR MIRIP MODAL BOOTSTRAP */
+    .swal2-popup.my-swal {
+      padding: 0 !important;
+      border-radius: 12px !important;
+      width: 400px;
+    }
+
+    .swal2-title.my-swal-title {
+      background: #212529 !important;
+      color: white !important;
+      margin: 0 !important;
+      padding: 15px 20px !important;
+      font-size: 16px !important;
+      font-weight: bold !important;
+      text-transform: uppercase !important;
+      border-radius: 12px 12px 0 0 !important;
+      text-align: left !important;
+      /* Membuat Judul Rata Kiri */
+    }
+
+    .swal2-html-container.my-swal-content {
+      margin: 0 !important;
+      text-align: left !important;
+    }
+
+    .swal2-actions {
+      padding-bottom: 20px !important;
+    }
+
+    /* Jarak bawah tombol */
+
     @media print {
       @page {
         size: A4 portrait;
@@ -189,15 +250,13 @@
         padding: 0 !important;
         margin: 0 !important;
         background-color: #fff !important;
-        zoom: 72%;
+        zoom: 75%;
       }
 
       .main-card {
         padding: 0 !important;
-        margin: 0 !important;
         border: none !important;
         box-shadow: none !important;
-        max-width: 100% !important;
       }
 
       .d-print-none,
@@ -209,9 +268,14 @@
         display: none !important;
       }
 
-      .table-responsive {
-        border: none !important;
-        overflow: visible !important;
+      .hide-col-1 .col-group-1,
+      .hide-col-2 .col-group-2,
+      .hide-col-3 .col-group-3 {
+        display: none !important;
+      }
+
+      .print-hidden-row {
+        display: none !important;
       }
 
       .main-table {
@@ -223,49 +287,43 @@
       .main-table td {
         border: 1px solid #000 !important;
         padding: 3px 2px !important;
-        font-size: 10px !important;
-      }
-
-      .header-brand h2 {
-        font-size: 18px !important;
       }
     }
   </style>
 </head>
 
 <body>
-
   <div class="container-fluid d-print-none top-admin-bar mb-3" style="max-width: 1450px;">
     <div class="d-flex justify-content-end align-items-center">
       <?php if (isset($_SESSION['admin_id'])): ?>
         <span class="small fw-bold me-3 text-uppercase">Admin: <?php echo $_SESSION['admin_user']; ?></span>
-        <button onclick="window.print()" class="btn btn-danger btn-sm fw-bold me-2" style="font-size: 11px;">EXPORT
-          PDF</button>
-        <button onclick="konfirmasiLogout()" class="btn btn-outline-dark btn-sm fw-bold"
-          style="font-size: 11px;">LOGOUT</button>
+        <button onclick="pilihRentangCetak()" class="btn-export-custom me-2">EXPORT PDF</button>
+        <button onclick="konfirmasiLogout()" class="btn btn-danger btn-sm fw-bold"
+          style="font-size: 11px; border-radius: 4px;">LOGOUT</button>
       <?php else: ?>
-        <button class="btn btn-outline-primary btn-sm fw-bold" style="font-size: 11px;" data-bs-toggle="modal"
+        <button class="btn-outline-black px-3 py-1" style="font-size: 11px;" data-bs-toggle="modal"
           data-bs-target="#modalLogin">LOGIN ADMIN</button>
       <?php endif; ?>
     </div>
   </div>
 
   <div class="main-card">
-    <div class="page-info text-uppercase">HALAMAN : <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?></div>
+    <div class="page-info">HALAMAN : <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?></div>
     <div class="header-brand">
       <h2>Daftar Pengendali Surat Keluar</h2>
       <p>SPT ♥</p>
     </div>
 
     <div class="pagination-nav d-print-none">
-      <div style="width:150px; text-align:right;">
-        <?php if ($currentPage > 0): ?><a href="index.php?page=<?php echo $currentPage - 1; ?>" class="btn-nav">←
-            SEBELUMNYA</a><?php endif; ?>
+      <div class="nav-side left">
+        <?php if ($currentPage > 0): ?><a href="index.php?page=<?php echo $currentPage - 1; ?>"
+            class="btn-outline-black px-3 py-1" style="font-size: 12px;">← SEBELUMNYA</a><?php endif; ?>
       </div>
-      <div style="min-width:150px; text-align:center;"><span class="fw-bold">LEMBAR <?php echo $currentPage; ?></span>
+      <div class="nav-center"><span class="fw-bold">LEMBAR <?php echo $currentPage; ?></span></div>
+      <div class="nav-side right">
+        <a href="index.php?page=<?php echo $currentPage + 1; ?>" class="btn-outline-black px-3 py-1"
+          style="font-size: 12px;">SELANJUTNYA →</a>
       </div>
-      <div style="width:150px;"><a href="index.php?page=<?php echo $currentPage + 1; ?>" class="btn-nav">SELANJUTNYA
-          →</a></div>
     </div>
 
     <div class="d-flex justify-content-end mb-4 d-print-none action-buttons-container">
@@ -274,53 +332,64 @@
     </div>
 
     <div class="table-responsive">
-      <table class="main-table text-center">
+      <table class="main-table text-center" id="mainTable">
         <thead>
           <tr>
-            <?php for ($k = 0; $k < 3; $k++): ?>
-              <th class="<?php echo ($k > 0) ? 'col-divider' : ''; ?>" width="35">No</th>
-              <th width="75">Klasifikasi</th>
-              <th width="80">Tanggal</th>
-              <th width="120">Ket (+)</th>
-              <th width="85" class="d-print-none">Aksi</th>
+            <?php for ($k = 1; $k <= 3; $k++): ?>
+              <th class="col-group-<?php echo $k; ?> <?php echo ($k > 1) ? 'col-divider' : ''; ?>" width="35">No</th>
+              <th class="col-group-<?php echo $k; ?>" width="75">Klasifikasi</th>
+              <th class="col-group-<?php echo $k; ?>" width="80">Tanggal</th>
+              <th class="col-group-<?php echo $k; ?>" width="120">Ket (+)</th>
+              <th class="col-group-<?php echo $k; ?> d-print-none" width="85">Aksi</th>
             <?php endfor; ?>
           </tr>
         </thead>
         <tbody>
           <?php
           $startNumber = ($currentPage * 100) + 1;
-          for ($i = 0; $i < 34; $i++) {
-            echo "<tr>";
-            $ranges = [['o' => 0], ['o' => 34], ['o' => 67]];
-            foreach ($ranges as $idx => $r) {
-              $divider = ($idx > 0) ? 'col-divider' : '';
-              $curr_no = $startNumber + $r['o'] + $i;
-              if (($r['o'] + $i) <= 99) {
-                $k = $data[$curr_no]['k'] ?? '';
-                $p = $data[$curr_no]['p'] ?? '';
-                $tRaw = $data[$curr_no]['t'] ?? '';
-                $t = ($tRaw && $tRaw != '0000-00-00 00:00:00') ? date('d-m-y', strtotime($tRaw)) : '';
-                echo "<td class='no-column $divider'>$curr_no</td><td>$k</td><td>$t</td><td>$p</td><td class='d-print-none'>";
-                if (isset($data[$curr_no])) {
-                  echo "<button class='btn-action-edit' onclick='bukaModalEdit(\"$curr_no\", \"$curr_no\", \"$k\", \"$p\", \"\", false)'>EDIT</button>";
-                  echo "<button class='btn-action-delete' onclick='konfirmasiHapus(\"$curr_no\", \"$curr_no\", false)'>HAPUS</button>";
-                }
-                echo "</td>";
-              } else {
-                echo "<td class='no-column $divider'></td><td></td><td></td><td></td><td class='d-print-none'></td>";
-              }
-            }
-            echo "</tr>";
-          } ?>
+          for ($i = 0; $i < 34; $i++): ?>
+            <tr>
+              <?php
+              $ranges = [['o' => 0, 'g' => 1], ['o' => 34, 'g' => 2], ['o' => 67, 'g' => 3]];
+              foreach ($ranges as $idx => $r):
+                $divider = ($idx > 0) ? 'col-divider' : '';
+                $curr_no = $startNumber + $r['o'] + $i;
+                if ($curr_no <= ($startNumber + 99)):
+                  $k = $data[$curr_no]['k'] ?? '';
+                  $p = $data[$curr_no]['p'] ?? '';
+                  $tRaw = $data[$curr_no]['t'] ?? '';
+                  $dataDate = ($tRaw && $tRaw != '0000-00-00 00:00:00') ? date('Y-m-d', strtotime($tRaw)) : '';
+                  $tDisplay = ($dataDate) ? date('d-m-y', strtotime($tRaw)) : '';
+                  ?>
+                  <td class="col-group-<?php echo $r['g']; ?> no-column <?php echo $divider; ?>"
+                    data-date="<?php echo $dataDate; ?>"><?php echo $curr_no; ?></td>
+                  <td class="col-group-<?php echo $r['g']; ?>" data-date="<?php echo $dataDate; ?>"><?php echo $k; ?></td>
+                  <td class="col-group-<?php echo $r['g']; ?>" data-date="<?php echo $dataDate; ?>"><?php echo $tDisplay; ?>
+                  </td>
+                  <td class="col-group-<?php echo $r['g']; ?>" data-date="<?php echo $dataDate; ?>"><?php echo $p; ?></td>
+                  <td class="col-group-<?php echo $r['g']; ?> d-print-none">
+                    <?php if (isset($data[$curr_no])): ?>
+                      <button class="btn-action-edit"
+                        onclick="bukaModalEdit('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', '<?php echo $k; ?>', '<?php echo $p; ?>', '', false)">EDIT</button>
+                      <button class="btn-action-delete"
+                        onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
+                    <?php endif; ?>
+                  </td>
+                <?php else: ?>
+                  <td colspan="5" class="col-group-<?php echo $r['g']; ?> <?php echo $divider; ?>"></td>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </tr>
+          <?php endfor; ?>
         </tbody>
       </table>
     </div>
 
     <?php if (!empty($sisipanData)): ?>
-      <div class="mt-5">
+      <div class="mt-5" id="sectionSisipan">
         <h5 class="fw-bold mb-3 small text-uppercase">Nomor Sisipan (Lembar <?php echo $currentPage; ?>)</h5>
         <div class="table-responsive">
-          <table class="main-table text-center">
+          <table class="main-table text-center" id="tableSisipan">
             <thead>
               <tr style="background-color: #fef2f2;">
                 <th width="100">No. Sisipan</th>
@@ -331,8 +400,10 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($sisipanData as $s): ?>
-                <tr>
+              <?php foreach ($sisipanData as $s):
+                $sDate = date('Y-m-d', strtotime($s['tanggal_manual']));
+                ?>
+                <tr data-date="<?php echo $sDate; ?>">
                   <td class="fw-bold"><?php echo $s['no_urut']; ?></td>
                   <td><?php echo $s['klas']; ?></td>
                   <td><?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?></td>
@@ -355,20 +426,26 @@
   <div class="modal fade" id="modalLogin" tabindex="-1">
     <div class="modal-dialog modal-sm modal-dialog-centered">
       <div class="modal-content border-0 shadow" style="border-radius: 12px;">
-        <div class="modal-header bg-primary text-white">
-          <h6 class="modal-title fw-bold">LOGIN ADMIN</h6><button type="button" class="btn-close btn-close-white"
-            data-bs-dismiss="modal"></button>
+        <div class="modal-header bg-dark text-white">
+          <h6 class="modal-title fw-bold">LOGIN ADMIN</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <form action="index.php?page=<?php echo $currentPage; ?>" method="POST">
           <input type="hidden" name="login" value="1">
-          <div class="modal-body p-3">
-            <div class="mb-2"><label class="small fw-bold">USERNAME</label><input type="text" name="username"
-                class="form-control form-control-sm" required></div>
-            <div class="mb-2"><label class="small fw-bold">PASSWORD</label><input type="password" name="password"
-                class="form-control form-control-sm" required></div>
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-uppercase">USERNAME</label>
+              <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-0">
+              <label class="form-label small fw-bold text-uppercase">PASSWORD</label>
+              <input type="password" name="password" class="form-control" required>
+            </div>
           </div>
-          <div class="modal-footer border-0"><button type="submit"
-              class="btn btn-primary w-100 fw-bold small">MASUK</button></div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light small fw-bold" data-bs-dismiss="modal">BATAL</button>
+            <button type="submit" class="btn btn-dark small fw-bold px-4">MASUK</button>
+          </div>
         </form>
       </div>
     </div>
@@ -378,8 +455,8 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow" style="border-radius: 12px;">
         <div class="modal-header bg-dark text-white">
-          <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA</h6><button type="button"
-            class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <form id="formInput" action="index.php?page=<?php echo $currentPage; ?>" method="POST">
           <input type="hidden" name="aksi" id="form_mode" value="tambah">
@@ -406,9 +483,10 @@
               </select>
             </div>
           </div>
-          <div class="modal-footer border-0"><button type="button" class="btn btn-light small fw-bold"
-              data-bs-dismiss="modal">BATAL</button><button type="submit"
-              class="btn btn-dark small fw-bold px-4">SIMPAN</button></div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light small fw-bold" data-bs-dismiss="modal">BATAL</button>
+            <button type="submit" class="btn btn-dark small fw-bold px-4">SIMPAN</button>
+          </div>
         </form>
       </div>
     </div>
@@ -420,33 +498,85 @@
     const modalCtrl = new bootstrap.Modal(document.getElementById('modalData'));
     const formInput = document.getElementById('formInput');
 
+    function pilihRentangCetak() {
+      Swal.fire({
+        title: 'RENTANG WAKTU CETAK',
+        customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content' },
+        html: `
+          <div class="p-4 pb-0 text-start"> <div class="mb-4">
+              <label class="form-label small fw-bold text-uppercase">Tanggal Mulai</label>
+              <input type="date" id="swal_start" class="form-control shadow-none py-2">
+            </div>
+            <div class="mb-4"> <label class="form-label small fw-bold text-uppercase">Tanggal Selesai</label>
+              <input type="date" id="swal_end" class="form-control shadow-none py-2">
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'SIMPAN',
+        cancelButtonText: 'BATAL',
+        buttonsStyling: false,
+        didOpen: () => {
+          Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
+          Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark';
+        },
+        preConfirm: () => {
+          const start = document.getElementById('swal_start').value;
+          const end = document.getElementById('swal_end').value;
+          if (!start || !end) { Swal.showValidationMessage('Mohon isi kedua tanggal!'); }
+          return { start, end };
+        }
+      }).then((result) => { if (result.isConfirmed) jalankanFilterDanCetak(result.value.start, result.value.end); });
+    }
+
+    function jalankanFilterDanCetak(start, end) {
+      const body = document.body;
+      body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
+      let hasDataCol1 = false, hasDataCol2 = false, hasDataCol3 = false;
+      document.querySelectorAll('td[data-date]').forEach(td => td.style.visibility = "visible");
+      document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
+        let rowHasAnyData = false;
+        tr.querySelectorAll('td[data-date]').forEach(td => {
+          const date = td.getAttribute('data-date');
+          const isVisible = (date >= start && date <= end);
+          if (isVisible) {
+            rowHasAnyData = true;
+            if (td.classList.contains('col-group-1')) hasDataCol1 = true;
+            if (td.classList.contains('col-group-2')) hasDataCol2 = true;
+            if (td.classList.contains('col-group-3')) hasDataCol3 = true;
+          } else { td.innerText = ""; }
+        });
+        if (!rowHasAnyData) tr.classList.add('print-hidden-row');
+        else tr.classList.remove('print-hidden-row');
+      });
+      document.querySelectorAll('#tableSisipan tbody tr').forEach(tr => {
+        const date = tr.getAttribute('data-date');
+        if (date >= start && date <= end) tr.classList.remove('print-hidden-row');
+        else tr.classList.add('print-hidden-row');
+      });
+      if (!hasDataCol1) body.classList.add('hide-col-1');
+      if (!hasDataCol2) body.classList.add('hide-col-2');
+      if (!hasDataCol3) body.classList.add('hide-col-3');
+      window.print();
+      setTimeout(() => { location.reload(); }, 1500);
+    }
+
     function syncNoSisipan(val) { document.getElementById('input_no').value = val; }
     function bukaModalTambah() { document.getElementById('modalTitle').innerText = "TAMBAH DATA"; document.getElementById('form_mode').value = "tambah"; document.getElementById('is_sisipan').value = "0"; document.getElementById('container_no_sisipan').style.display = "none"; document.getElementById('container_tgl').style.display = "none"; document.getElementById('input_no').value = ""; formInput.reset(); modalCtrl.show(); }
     function bukaModalSisipan() { document.getElementById('modalTitle').innerText = "TAMBAH SISIPAN"; document.getElementById('form_mode').value = "tambah"; document.getElementById('is_sisipan').value = "1"; document.getElementById('container_no_sisipan').style.display = "block"; document.getElementById('container_tgl').style.display = "block"; formInput.reset(); modalCtrl.show(); }
     function bukaModalEdit(id, f_no, klas, plus, tgl, sisipan = false) { document.getElementById('modalTitle').innerText = "EDIT DATA NOMOR " + f_no; document.getElementById('form_mode').value = "edit"; document.getElementById('is_sisipan').value = sisipan ? "1" : "0"; document.getElementById('input_no').value = id; document.getElementById('container_no_sisipan').style.display = "none"; document.getElementById('container_tgl').style.display = sisipan ? "block" : "none"; document.getElementById('input_klas').value = klas; document.getElementById('input_plus').value = plus; if (sisipan) document.getElementById('input_tgl').value = tgl; modalCtrl.show(); }
-
     function konfirmasiHapus(db_id, f_no, sisipan = false) { Swal.fire({ title: 'Hapus Data?', text: "Data nomor " + f_no + " akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#000', confirmButtonText: 'Ya, Hapus!' }).then((result) => { if (result.isConfirmed) window.location.href = `index.php?hapus=${db_id}&page=<?php echo $currentPage; ?>${sisipan ? '&sisipan=1' : ''}`; }); }
-
-    function konfirmasiLogout() {
-      Swal.fire({
-        title: 'Logout?',
-        text: "Anda akan keluar dari mode Admin.",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#000',
-        confirmButtonText: 'Ya, Keluar!'
-      }).then((result) => { if (result.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&logout=1"; } });
-    }
+    function konfirmasiLogout() { Swal.fire({ title: 'Logout dari Admin?', text: "Anda akan keluar dari sesi admin.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal' }).then((result) => { if (result.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&logout=1"; } }); }
 
     <?php if (isset($_GET['status'])): ?>
       const status = '<?php echo $_GET['status']; ?>';
       const val = '<?php echo isset($_GET['val']) ? $_GET['val'] : ""; ?>';
-      if (status === 'exists') Swal.fire({ title: 'Nomor Duplikat!', text: 'Nomor sisipan ' + val + ' sudah ada. Silakan gunakan nomor lain.', icon: 'error', confirmButtonColor: '#000' });
+      if (status === 'exists') Swal.fire({ title: 'Nomor Duplikat!', text: 'Nomor sisipan ' + val + ' sudah ada.', icon: 'error' });
       if (status === 'login_success') Swal.fire('Berhasil!', 'Selamat datang Admin.', 'success');
       if (status === 'login_failed') Swal.fire('Gagal!', 'Username atau Password salah.', 'error');
-      if (status === 'success') Swal.fire('Berhasil!', 'Data disimpan.', 'success');
-      if (status === 'updated') Swal.fire('Berhasil!', 'Data diperbarui.', 'success');
-      if (status === 'deleted') Swal.fire('Dihapus!', 'Data dihapus.', 'success');
+      if (status === 'success') Swal.fire('Berhasil!', 'Data baru telah disimpan.', 'success');
+      if (status === 'updated') Swal.fire('Berhasil!', 'Data telah diperbarui.', 'success');
+      if (status === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
     <?php endif; ?>
   </script>
 </body>
