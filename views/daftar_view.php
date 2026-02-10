@@ -59,7 +59,6 @@
       display: inline-block;
     }
 
-    /* PAGINATION & BUTTON NAV */
     .pagination-nav {
       margin-bottom: 30px;
       display: flex;
@@ -142,7 +141,6 @@
       border-left: 3px solid #000 !important;
     }
 
-    /* BUTTONS HOVER */
     .btn-modern-add {
       background-color: var(--btn-tambah-bg);
       color: #fff;
@@ -156,7 +154,7 @@
 
     .btn-modern-add:hover {
       background-color: var(--btn-hover-bg) !important;
-      color: #fff !important;
+      color: #fff;
     }
 
     .btn-sisipan-custom {
@@ -212,7 +210,6 @@
       font-weight: 700;
     }
 
-    /* POPUP CETAK STYLE */
     .swal2-popup.my-swal {
       padding: 0 !important;
       border-radius: 12px !important;
@@ -241,6 +238,16 @@
       margin-top: 10px !important;
     }
 
+    .input-group-text {
+      background: transparent;
+      border-left: none;
+      cursor: pointer;
+    }
+
+    .form-control.border-end-0 {
+      border-right: none;
+    }
+
     @media print {
       @page {
         size: A4 portrait;
@@ -254,7 +261,6 @@
         zoom: 75%;
       }
 
-      /* Pastikan main card dan table tidak tersembunyi */
       .main-card {
         padding: 0 !important;
         border: none !important;
@@ -378,8 +384,10 @@
                     <?php if (isset($data[$curr_no])): ?>
                       <button class="btn-action-edit"
                         onclick="bukaModalEdit('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', '<?php echo $k; ?>', '<?php echo $p; ?>', '', false)">EDIT</button>
-                      <button class="btn-action-delete"
-                        onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
+                      <?php if (isset($_SESSION['admin_id'])): ?>
+                        <button class="btn-action-delete"
+                          onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
+                      <?php endif; ?>
                     <?php endif; ?>
                   </td>
                 <?php else: ?>
@@ -418,8 +426,10 @@
                   <td class="d-print-none">
                     <button class="btn-action-edit"
                       onclick="bukaModalEdit('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', '<?php echo $s['klas']; ?>', '<?php echo $s['plus']; ?>', '<?php echo $s['tanggal_manual']; ?>', true)">EDIT</button>
-                    <button class="btn-action-delete"
-                      onclick="konfirmasiHapus('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', true)">HAPUS</button>
+                    <?php if (isset($_SESSION['admin_id'])): ?>
+                      <button class="btn-action-delete"
+                        onclick="konfirmasiHapus('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', true)">HAPUS</button>
+                    <?php endif; ?>
                   </td>
                 </tr>
               <?php endforeach; ?>
@@ -551,10 +561,7 @@
       const body = document.body;
       body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
       let hasDataCol1 = false, hasDataCol2 = false, hasDataCol3 = false;
-
-      // Tampilkan semua untuk pengecekan
       document.querySelectorAll('td[data-date]').forEach(td => td.style.visibility = "visible");
-
       document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
         let rowHasAnyData = false;
         tr.querySelectorAll('td[data-date]').forEach(td => {
@@ -565,28 +572,21 @@
             if (td.classList.contains('col-group-1')) hasDataCol1 = true;
             if (td.classList.contains('col-group-2')) hasDataCol2 = true;
             if (td.classList.contains('col-group-3')) hasDataCol3 = true;
-          } else {
-            td.innerText = ""; // Kosongkan teks agar tidak muncul di print
-          }
+          } else { td.innerText = ""; }
         });
         if (!rowHasAnyData) tr.classList.add('print-hidden-row');
         else tr.classList.remove('print-hidden-row');
       });
-
       document.querySelectorAll('#tableSisipan tbody tr').forEach(tr => {
         const date = tr.getAttribute('data-date');
         if (date >= start && date <= end) tr.classList.remove('print-hidden-row');
         else tr.classList.add('print-hidden-row');
       });
-
       if (!hasDataCol1) body.classList.add('hide-col-1');
       if (!hasDataCol2) body.classList.add('hide-col-2');
       if (!hasDataCol3) body.classList.add('hide-col-3');
-
-      // Gunakan timeout lebih lama agar browser sempat merender DOM sebelum memanggil dialog print
       setTimeout(() => {
         window.print();
-        // Reload setelah jeda print untuk mengembalikan tampilan normal
         setTimeout(() => { location.reload(); }, 500);
       }, 1000);
     }
@@ -595,8 +595,8 @@
     function bukaModalTambah() { document.getElementById('modalTitle').innerText = "TAMBAH DATA"; document.getElementById('form_mode').value = "tambah"; document.getElementById('is_sisipan').value = "0"; document.getElementById('container_no_sisipan').style.display = "none"; document.getElementById('container_tgl').style.display = "none"; document.getElementById('input_no').value = ""; formInput.reset(); modalCtrl.show(); }
     function bukaModalSisipan() { document.getElementById('modalTitle').innerText = "TAMBAH SISIPAN"; document.getElementById('form_mode').value = "tambah"; document.getElementById('is_sisipan').value = "1"; document.getElementById('container_no_sisipan').style.display = "block"; document.getElementById('container_tgl').style.display = "block"; formInput.reset(); modalCtrl.show(); }
     function bukaModalEdit(id, f_no, klas, plus, tgl, sisipan = false) { document.getElementById('modalTitle').innerText = "EDIT DATA NOMOR " + f_no; document.getElementById('form_mode').value = "edit"; document.getElementById('is_sisipan').value = sisipan ? "1" : "0"; document.getElementById('input_no').value = id; document.getElementById('container_no_sisipan').style.display = "none"; document.getElementById('container_tgl').style.display = sisipan ? "block" : "none"; document.getElementById('input_klas').value = klas; document.getElementById('input_plus').value = plus; if (sisipan) document.getElementById('input_tgl').value = tgl; modalCtrl.show(); }
-    function konfirmasiHapus(db_id, f_no, sisipan = false) { Swal.fire({ title: 'Hapus Data?', text: "Data nomor " + f_no + " akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#000', confirmButtonText: 'Ya, Hapus!' }).then((result) => { if (result.isConfirmed) window.location.href = `index.php?hapus=${db_id}&page=<?php echo $currentPage; ?>${sisipan ? '&sisipan=1' : ''}`; }); }
-    function konfirmasiLogout() { Swal.fire({ title: 'Logout?', text: "Anda akan keluar.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal' }).then((result) => { if (result.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&logout=1"; } }); }
+    function konfirmasiHapus(db_id, f_no, sisipan = false) { Swal.fire({ title: 'Hapus Data?', text: "Data nomor " + f_no + " akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal' }).then((result) => { if (result.isConfirmed) window.location.href = `index.php?hapus=${db_id}&page=<?php echo $currentPage; ?>${sisipan ? '&sisipan=1' : ''}`; }); }
+    function konfirmasiLogout() { Swal.fire({ title: 'Logout dari Admin?', text: "Anda akan keluar dari sesi admin.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa', confirmButtonText: 'Ya, Keluar!', cancelButtonText: 'Batal' }).then((result) => { if (result.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&logout=1"; } }); }
 
     <?php if (isset($_GET['status'])): ?>
       const status = '<?php echo $_GET['status']; ?>';
