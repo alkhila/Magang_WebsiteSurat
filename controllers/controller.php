@@ -5,49 +5,46 @@ include_once 'models/pengendali.php';
 class PengendaliController
 {
     private $model;
+    private $tipe;
 
     public function __construct()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $this->tipe = isset($_GET['type']) ? $_GET['type'] : 'biasa';
         $database = new Database();
-        $this->model = new Pengendali($database->getConnection());
+        $this->model = new Pengendali($database->getConnection(), $this->tipe);
     }
 
     public function handleRequest()
     {
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 0;
+        $tipe = $this->tipe;
 
-        // --- LOGIKA LOGOUT ---
         if (isset($_GET['logout'])) {
             $_SESSION = array();
             session_destroy();
-            header("Location: index.php?page=$page");
+            header("Location: index.php?page=$page&type=$tipe");
             exit();
         }
 
-        // --- LOGIKA LOGIN ---
         if (isset($_POST['login'])) {
             $username = $_POST['username'];
             $password = $_POST['password'];
 
-            $db = (new Database())->getConnection();
-            $stmt = $db->prepare("SELECT * FROM admin WHERE username = ? AND password = ?");
-            $stmt->execute([$username, $password]);
-            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+            $admin = $this->model->login($username, $password);
 
             if ($admin) {
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_user'] = $admin['username'];
-                header("Location: index.php?page=$page&status=login_success");
+                header("Location: index.php?page=$page&type=$tipe&status=login_success");
             } else {
-                header("Location: index.php?page=$page&status=login_failed");
+                header("Location: index.php?page=$page&type=$tipe&status=login_failed");
             }
             exit();
         }
 
-        // --- CRUD LOGIC ---
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi'])) {
             $aksi = $_POST['aksi'];
             $klas = $_POST['klas'];
@@ -58,9 +55,8 @@ class PengendaliController
             if ($aksi == 'tambah') {
                 if ($is_sisipan) {
                     $no_urut = $_POST['no_urut'];
-                    // CEK DUPLIKAT NOMOR SISIPAN
                     if ($this->model->getSisipanById($no_urut)) {
-                        header("Location: index.php?page=$page&status=exists&val=$no_urut");
+                        header("Location: index.php?page=$page&type=$tipe&status=exists&val=$no_urut");
                         exit();
                     }
                     $this->model->createSisipan($no_urut, $klas, $plus, $tgl);
@@ -68,7 +64,7 @@ class PengendaliController
                     $no_urut = $this->model->getNextAvailableNo($page);
                     $this->model->create($no_urut, $klas, $plus, null);
                 }
-                header("Location: index.php?page=$page&status=success");
+                header("Location: index.php?page=$page&type=$tipe&status=success");
             } else if ($aksi == 'edit') {
                 $no_urut = $_POST['no_urut'];
                 if ($is_sisipan) {
@@ -76,7 +72,7 @@ class PengendaliController
                 } else {
                     $this->model->update($no_urut, $klas, $plus, null);
                 }
-                header("Location: index.php?page=$page&status=updated");
+                header("Location: index.php?page=$page&type=$tipe&status=updated");
             }
             exit();
         }
@@ -87,7 +83,7 @@ class PengendaliController
             } else {
                 $this->model->delete($_GET['hapus']);
             }
-            header("Location: index.php?page=$page&status=deleted");
+            header("Location: index.php?page=$page&type=$tipe&status=deleted");
             exit();
         }
     }
@@ -105,6 +101,7 @@ class PengendaliController
             ];
         }
         $currentPage = $page;
+        $currentType = $this->tipe;
         include 'views/daftar_view.php';
     }
 }

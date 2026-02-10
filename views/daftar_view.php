@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daftar Pengendali Surat Keluar</title>
+  <title>Daftar Pengendali Surat Keluar <?php echo strtoupper($currentType); ?></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
@@ -57,6 +57,7 @@
       letter-spacing: 2px;
       border-bottom: 4px solid #000;
       display: inline-block;
+      padding-bottom: 5px;
     }
 
     .pagination-nav {
@@ -184,12 +185,9 @@
       transition: 0.3s ease;
     }
 
-    .btn-export-custom:hover,
-    .btn-export-custom:focus {
+    .btn-export-custom:hover {
       background-color: #fff !important;
       color: #000 !important;
-      outline: none !important;
-      box-shadow: none !important;
     }
 
     .dropdown-menu {
@@ -208,6 +206,7 @@
       color: #334155;
     }
 
+    /* Hover Dropdown dikembalikan ke abu-abu */
     .dropdown-item:hover {
       background-color: #e2e8f0;
       color: #000;
@@ -231,31 +230,6 @@
       border-radius: 4px;
       font-size: 9px;
       font-weight: 700;
-    }
-
-    .login-input-group {
-      border: 1px solid #dee2e6;
-      border-radius: 6px;
-      transition: 0.15s;
-      display: flex;
-      background: #fff;
-    }
-
-    .login-input-group:focus-within {
-      border-color: #86b7fe;
-      outline: 0;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    .login-input-group .form-control {
-      border: none !important;
-      box-shadow: none !important;
-    }
-
-    .login-input-group .input-group-text {
-      background: transparent;
-      border: none;
-      cursor: pointer;
     }
 
     .swal2-popup.my-swal {
@@ -286,6 +260,18 @@
       margin-top: 10px !important;
     }
 
+    .login-input-group {
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      display: flex;
+      background: #fff;
+    }
+
+    .login-input-group .form-control {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
     @media print {
       @page {
         size: A4 portrait;
@@ -304,8 +290,6 @@
         border: none !important;
         box-shadow: none !important;
         max-width: 100% !important;
-        display: block !important;
-        visibility: visible !important;
       }
 
       .d-print-none,
@@ -331,7 +315,6 @@
         border: 2px solid #000 !important;
         width: 100% !important;
         display: table !important;
-        table-layout: auto !important;
       }
 
       .main-table th,
@@ -345,51 +328,49 @@
 
 <body>
   <div class="container-fluid d-print-none top-admin-bar mb-3" style="max-width: 1450px;">
-    <div class="d-flex justify-content-end align-items-center p-0">
-      <?php if (isset($_SESSION['admin_id'])): ?>
-        <span class="small fw-bold me-3 text-uppercase">Admin:
-          <?php echo $_SESSION['admin_user']; ?>
-        </span>
+    <div class="d-flex justify-content-between align-items-center">
+      <a href="index.php" class="btn btn-sm btn-outline-secondary fw-bold" style="font-size: 11px;">
+        <i class="bi bi-arrow-left"></i> KEMBALI KE PILIHAN
+      </a>
 
-        <div class="dropdown me-2">
-          <button class="btn-export-custom dropdown-toggle shadow-none" type="button" data-bs-toggle="dropdown">EXPORT
-            PDF</button>
-          <ul class="dropdown-menu dropdown-menu-end shadow">
-            <li><a class="dropdown-item" href="#" onclick="pilihRentangCetak()">BERDASARKAN RENTANG WAKTU</a></li>
-            <li><a class="dropdown-item" href="#" onclick="pilihNomorUrutCetak()">BERDASARKAN NOMOR URUT</a></li>
-          </ul>
-        </div>
-
-        <button onclick="konfirmasiLogout()" class="btn btn-danger btn-sm fw-bold"
-          style="font-size: 11px; border-radius: 4px;">LOGOUT</button>
-      <?php else: ?>
-        <button class="btn-outline-black px-3 py-1" style="font-size: 11px;" data-bs-toggle="modal"
-          data-bs-target="#modalLogin">LOGIN ADMIN</button>
-      <?php endif; ?>
+      <div class="d-flex align-items-center p-0">
+        <?php if (isset($_SESSION['admin_id'])): ?>
+          <span class="small fw-bold me-3 text-uppercase">Admin: <?php echo $_SESSION['admin_user']; ?></span>
+          <div class="dropdown me-2">
+            <button class="btn-export-custom dropdown-toggle shadow-none" type="button" data-bs-toggle="dropdown">EXPORT
+              PDF</button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><a class="dropdown-item" href="#" onclick="pilihRentangCetak()">BERDASARKAN RENTANG WAKTU</a></li>
+              <li><a class="dropdown-item" href="#" onclick="pilihNomorUrutCetak()">BERDASARKAN NOMOR URUT</a></li>
+            </ul>
+          </div>
+          <button onclick="konfirmasiLogout()" class="btn btn-danger btn-sm fw-bold"
+            style="font-size: 11px; border-radius: 4px;">LOGOUT</button>
+        <?php else: ?>
+          <button class="btn-outline-black px-3 py-1" style="font-size: 11px;" data-bs-toggle="modal"
+            data-bs-target="#modalLogin">LOGIN ADMIN</button>
+        <?php endif; ?>
+      </div>
     </div>
   </div>
 
   <div class="main-card">
-    <div class="page-info">HALAMAN :
-      <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?>
-    </div>
+    <div class="page-info">HALAMAN : <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?></div>
     <div class="header-brand">
-      <h2>Daftar Pengendali Surat Keluar</h2>
-      <p>SPT ♥</p>
+      <h2>Daftar Pengendali Surat Keluar <?php echo strtoupper($currentType); ?></h2>
     </div>
 
     <div class="pagination-nav d-print-none">
       <div class="nav-side left">
-        <?php if ($currentPage > 0): ?><a href="index.php?page=<?php echo $currentPage - 1; ?>"
+        <?php if ($currentPage > 0): ?>
+          <a href="index.php?page=<?php echo $currentPage - 1; ?>&type=<?php echo $currentType; ?>"
             class="btn-outline-black px-3 py-1" style="font-size: 12px;">← SEBELUMNYA</a>
         <?php endif; ?>
       </div>
-      <div class="nav-center"><span class="fw-bold">LEMBAR
-          <?php echo $currentPage; ?>
-        </span></div>
+      <div class="nav-center"><span class="fw-bold">LEMBAR <?php echo $currentPage; ?></span></div>
       <div class="nav-side right">
-        <a href="index.php?page=<?php echo $currentPage + 1; ?>" class="btn-outline-black px-3 py-1"
-          style="font-size: 12px;">SELANJUTNYA →</a>
+        <a href="index.php?page=<?php echo $currentPage + 1; ?>&type=<?php echo $currentType; ?>"
+          class="btn-outline-black px-3 py-1" style="font-size: 12px;">SELANJUTNYA →</a>
       </div>
     </div>
 
@@ -429,26 +410,19 @@
                   $tDisplay = ($dataDate) ? date('d-m-y', strtotime($tRaw)) : '';
                   ?>
                   <td class="col-group-<?php echo $r['g']; ?> no-column <?php echo $divider; ?>"
-                    data-no="<?php echo $curr_no; ?>" data-date="<?php echo $dataDate; ?>">
-                    <?php echo $curr_no; ?>
-                  </td>
+                    data-no="<?php echo $curr_no; ?>" data-date="<?php echo $dataDate; ?>"><?php echo $curr_no; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>" data-no="<?php echo $curr_no; ?>"
-                    data-date="<?php echo $dataDate; ?>">
-                    <?php echo $k; ?>
-                  </td>
+                    data-date="<?php echo $dataDate; ?>"><?php echo $k; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>" data-no="<?php echo $curr_no; ?>"
-                    data-date="<?php echo $dataDate; ?>">
-                    <?php echo $tDisplay; ?>
-                  </td>
+                    data-date="<?php echo $dataDate; ?>"><?php echo $tDisplay; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>" data-no="<?php echo $curr_no; ?>"
-                    data-date="<?php echo $dataDate; ?>">
-                    <?php echo $p; ?>
-                  </td>
+                    data-date="<?php echo $dataDate; ?>"><?php echo $p; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?> d-print-none">
                     <?php if (isset($data[$curr_no])): ?>
                       <button class="btn-action-edit"
                         onclick="bukaModalEdit('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', '<?php echo $k; ?>', '<?php echo $p; ?>', '', false)">EDIT</button>
-                      <?php if (isset($_SESSION['admin_id'])): ?><button class="btn-action-delete"
+                      <?php if (isset($_SESSION['admin_id'])): ?>
+                        <button class="btn-action-delete"
                           onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
                       <?php endif; ?>
                     <?php endif; ?>
@@ -465,9 +439,7 @@
 
     <?php if (!empty($sisipanData)): ?>
       <div class="mt-5" id="sectionSisipan">
-        <h5 class="fw-bold mb-3 small text-uppercase">Nomor Sisipan (Lembar
-          <?php echo $currentPage; ?>)
-        </h5>
+        <h5 class="fw-bold mb-3 small text-uppercase">Nomor Sisipan (Lembar <?php echo $currentPage; ?>)</h5>
         <div class="table-responsive">
           <table class="main-table text-center" id="tableSisipan">
             <thead>
@@ -484,22 +456,15 @@
                 $sDate = date('Y-m-d', strtotime($s['tanggal_manual']));
                 ?>
                 <tr data-no-full="<?php echo $s['no_urut']; ?>" data-date="<?php echo $sDate; ?>">
-                  <td class="fw-bold">
-                    <?php echo $s['no_urut']; ?>
-                  </td>
-                  <td>
-                    <?php echo $s['klas']; ?>
-                  </td>
-                  <td>
-                    <?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?>
-                  </td>
-                  <td>
-                    <?php echo $s['plus']; ?>
-                  </td>
+                  <td class="fw-bold"><?php echo $s['no_urut']; ?></td>
+                  <td><?php echo $s['klas']; ?></td>
+                  <td><?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?></td>
+                  <td><?php echo $s['plus']; ?></td>
                   <td class="d-print-none">
                     <button class="btn-action-edit"
                       onclick="bukaModalEdit('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', '<?php echo $s['klas']; ?>', '<?php echo $s['plus']; ?>', '<?php echo $s['tanggal_manual']; ?>', true)">EDIT</button>
-                    <?php if (isset($_SESSION['admin_id'])): ?><button class="btn-action-delete"
+                    <?php if (isset($_SESSION['admin_id'])): ?>
+                      <button class="btn-action-delete"
                         onclick="konfirmasiHapus('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', true)">HAPUS</button>
                     <?php endif; ?>
                   </td>
@@ -519,21 +484,26 @@
           <h6 class="modal-title fw-bold">LOGIN ADMIN</h6><button type="button" class="btn-close btn-close-white"
             data-bs-dismiss="modal"></button>
         </div>
-        <form action="index.php?page=<?php echo $currentPage; ?>" method="POST">
+        <form action="index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>" method="POST">
           <input type="hidden" name="login" value="1">
           <div class="modal-body p-4">
-            <div class="mb-3"><label class="form-label small fw-bold">USERNAME</label>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">USERNAME</label>
               <div class="login-input-group"><input type="text" name="username" class="form-control" required></div>
             </div>
-            <div class="mb-0"><label class="form-label small fw-bold">PASSWORD</label>
-              <div class="login-input-group"><input type="password" name="password" id="loginPassword"
-                  class="form-control" required><span class="input-group-text" onclick="togglePassword()"><i
-                    class="bi bi-eye-slash" id="toggleIcon"></i></span></div>
+            <div class="mb-0">
+              <label class="form-label small fw-bold">PASSWORD</label>
+              <div class="login-input-group">
+                <input type="password" name="password" id="loginPassword" class="form-control" required>
+                <span class="input-group-text" onclick="togglePassword()"><i class="bi bi-eye-slash"
+                    id="toggleIcon"></i></span>
+              </div>
             </div>
           </div>
-          <div class="modal-footer border-0"><button type="button" class="btn btn-light small fw-bold"
-              data-bs-dismiss="modal">BATAL</button><button type="submit"
-              class="btn btn-dark small fw-bold px-4">MASUK</button></div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light small fw-bold" data-bs-dismiss="modal">BATAL</button>
+            <button type="submit" class="btn btn-dark small fw-bold px-4">MASUK</button>
+          </div>
         </form>
       </div>
     </div>
@@ -546,19 +516,24 @@
           <h6 class="modal-title fw-bold" id="modalTitle">TAMBAH DATA</h6><button type="button"
             class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <form id="formInput" action="index.php?page=<?php echo $currentPage; ?>" method="POST">
+        <form id="formInput" action="index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>"
+          method="POST">
           <input type="hidden" name="aksi" id="form_mode" value="tambah">
           <input type="hidden" name="is_sisipan" id="is_sisipan" value="0">
           <input type="hidden" name="no_urut" id="input_no">
           <div class="modal-body p-4">
-            <div class="mb-3" id="container_no_sisipan" style="display:none;"><label
-                class="form-label small fw-bold">NOMOR SISIPAN</label><input type="text" id="display_no_sisipan"
-                class="form-control" oninput="syncNoSisipan(this.value)"></div>
-            <div class="mb-3" id="container_tgl" style="display:none;"><label class="form-label small fw-bold">TANGGAL
-                SURAT</label><input type="date" name="tanggal_manual" id="input_tgl" class="form-control"></div>
+            <div class="mb-3" id="container_no_sisipan" style="display:none;">
+              <label class="form-label small fw-bold">NOMOR SISIPAN</label>
+              <input type="text" id="display_no_sisipan" class="form-control" oninput="syncNoSisipan(this.value)">
+            </div>
+            <div class="mb-3" id="container_tgl" style="display:none;">
+              <label class="form-label small fw-bold">TANGGAL SURAT</label>
+              <input type="date" name="tanggal_manual" id="input_tgl" class="form-control">
+            </div>
             <div class="mb-3"><label class="form-label small fw-bold">KLASIFIKASI</label><input type="text" name="klas"
                 id="input_klas" class="form-control" required></div>
-            <div class="mb-3"><label class="form-label small fw-bold">KETERANGAN</label>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">KETERANGAN</label>
               <select name="plus" id="input_plus" class="form-select" required>
                 <option value="" disabled selected>Pilih Bidang...</option>
                 <option value="Bidang Perpustakaan">Bidang Perpustakaan</option>
@@ -569,9 +544,10 @@
               </select>
             </div>
           </div>
-          <div class="modal-footer border-0"><button type="button" class="btn btn-light small fw-bold"
-              data-bs-dismiss="modal">BATAL</button><button type="submit"
-              class="btn btn-dark small fw-bold px-4">SIMPAN</button></div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light small fw-bold" data-bs-dismiss="modal">BATAL</button>
+            <button type="submit" class="btn btn-dark small fw-bold px-4">SIMPAN</button>
+          </div>
         </form>
       </div>
     </div>
@@ -590,13 +566,55 @@
       else { input.type = "password"; icon.classList.replace('bi-eye', 'bi-eye-slash'); }
     }
 
+    function syncNoSisipan(v) { document.getElementById('input_no').value = v; }
+
+    function bukaModalTambah() {
+      document.getElementById('modalTitle').innerText = "TAMBAH DATA";
+      document.getElementById('form_mode').value = "tambah";
+      document.getElementById('is_sisipan').value = "0";
+      document.getElementById('container_no_sisipan').style.display = "none";
+      document.getElementById('container_tgl').style.display = "none";
+      document.getElementById('input_no').value = "";
+      formInput.reset(); modalCtrl.show();
+    }
+
+    function bukaModalSisipan() {
+      document.getElementById('modalTitle').innerText = "TAMBAH SISIPAN";
+      document.getElementById('form_mode').value = "tambah";
+      document.getElementById('is_sisipan').value = "1";
+      document.getElementById('container_no_sisipan').style.display = "block";
+      document.getElementById('container_tgl').style.display = "block";
+
+      const inputSisipan = document.getElementById('display_no_sisipan');
+      const tipeWeb = '<?php echo $currentType; ?>';
+      inputSisipan.placeholder = (tipeWeb === 'spt') ? "Contoh: 12.1" : "Contoh: 12.A";
+
+      formInput.reset(); modalCtrl.show();
+    }
+
+    function bukaModalEdit(id, f_no, k, p, t, s = false) {
+      document.getElementById('modalTitle').innerText = "EDIT DATA " + f_no;
+      document.getElementById('form_mode').value = "edit";
+      document.getElementById('is_sisipan').value = s ? "1" : "0";
+      document.getElementById('input_no').value = id;
+      document.getElementById('container_no_sisipan').style.display = "none";
+      document.getElementById('container_tgl').style.display = s ? "block" : "none";
+      document.getElementById('input_klas').value = k;
+      document.getElementById('input_plus').value = p;
+      if (s) document.getElementById('input_tgl').value = t;
+      modalCtrl.show();
+    }
+
     function pilihRentangCetak() {
       Swal.fire({
         title: 'RENTANG WAKTU CETAK',
         customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content' },
         html: `<div class="p-4 pb-0 text-start"><div class="mb-4"><label class="form-label small fw-bold">TANGGAL MULAI</label><input type="date" id="swal_start" class="form-control shadow-none py-2"></div><div class="mb-2"><label class="form-label small fw-bold">TANGGAL SELESAI</label><input type="date" id="swal_end" class="form-control shadow-none py-2"></div></div>`,
         showCancelButton: true, confirmButtonText: 'SIMPAN', cancelButtonText: 'BATAL', buttonsStyling: false,
-        didOpen: () => { Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2'; Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark'; },
+        didOpen: () => {
+          Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
+          Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark';
+        },
         preConfirm: () => {
           const start = document.getElementById('swal_start').value;
           const end = document.getElementById('swal_end').value;
@@ -612,7 +630,10 @@
         customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content' },
         html: `<div class="p-4 pb-0 text-start"><div class="mb-4"><label class="form-label small fw-bold">NOMOR MULAI</label><input type="number" id="no_start" class="form-control shadow-none py-2"></div><div class="mb-2"><label class="form-label small fw-bold">NOMOR SELESAI</label><input type="number" id="no_end" class="form-control shadow-none py-2"></div></div>`,
         showCancelButton: true, confirmButtonText: 'SIMPAN', cancelButtonText: 'BATAL', buttonsStyling: false,
-        didOpen: () => { Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2'; Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark'; },
+        didOpen: () => {
+          Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
+          Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark';
+        },
         preConfirm: () => {
           const start = document.getElementById('no_start').value;
           const end = document.getElementById('no_end').value;
@@ -623,8 +644,7 @@
     }
 
     function jalankanFilterDanCetak(filter) {
-      const body = document.body;
-      body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
+      document.body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
       let hasCol1 = false, hasCol2 = false, hasCol3 = false;
 
       document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
@@ -640,32 +660,30 @@
         if (!rowVisible) tr.classList.add('print-hidden-row'); else tr.classList.remove('print-hidden-row');
       });
 
-      document.querySelectorAll('#tableSisipan tbody tr').forEach(tr => {
-        let visible = false;
-        if (filter.type === 'date') {
-          const date = tr.getAttribute('data-date');
-          visible = (date >= filter.start && date <= filter.end);
-        } else {
-          const noFull = tr.getAttribute('data-no-full');
-          const baseNo = parseInt(noFull.split('.')[0]);
-          visible = (baseNo >= filter.start && baseNo <= filter.end);
-        }
-        if (visible) tr.classList.remove('print-hidden-row'); else tr.classList.add('print-hidden-row');
-      });
+      if (!hasCol1) document.body.classList.add('hide-col-1');
+      if (!hasCol2) document.body.classList.add('hide-col-2');
+      if (!hasCol3) document.body.classList.add('hide-col-3');
 
-      if (!hasCol1) body.classList.add('hide-col-1');
-      if (!hasCol2) body.classList.add('hide-col-2');
-      if (!hasCol3) body.classList.add('hide-col-3');
-
-      setTimeout(() => { window.print(); setTimeout(() => { location.reload(); }, 500); }, 800);
+      setTimeout(() => { window.print(); setTimeout(() => { location.reload(); }, 500); }, 500);
     }
 
-    function syncNoSisipan(v) { document.getElementById('input_no').value = v; }
-    function bukaModalTambah() { document.getElementById('modalTitle').innerText = "TAMBAH DATA"; document.getElementById('form_mode').value = "tambah"; document.getElementById('is_sisipan').value = "0"; document.getElementById('container_no_sisipan').style.display = "none"; document.getElementById('container_tgl').style.display = "none"; document.getElementById('input_no').value = ""; formInput.reset(); modalCtrl.show(); }
-    function bukaModalSisipan() { document.getElementById('modalTitle').innerText = "TAMBAH SISIPAN"; document.getElementById('form_mode').value = "tambah"; document.getElementById('is_sisipan').value = "1"; document.getElementById('container_no_sisipan').style.display = "block"; document.getElementById('container_tgl').style.display = "block"; formInput.reset(); modalCtrl.show(); }
-    function bukaModalEdit(id, f_no, k, p, t, s = false) { document.getElementById('modalTitle').innerText = "EDIT DATA " + f_no; document.getElementById('form_mode').value = "edit"; document.getElementById('is_sisipan').value = s ? "1" : "0"; document.getElementById('input_no').value = id; document.getElementById('container_no_sisipan').style.display = "none"; document.getElementById('container_tgl').style.display = s ? "block" : "none"; document.getElementById('input_klas').value = k; document.getElementById('input_plus').value = p; if (s) document.getElementById('input_tgl').value = t; modalCtrl.show(); }
-    function konfirmasiHapus(id, no, s = false) { Swal.fire({ title: 'Hapus Data?', text: "Hapus nomor " + no, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33' }).then((r) => { if (r.isConfirmed) window.location.href = `index.php?hapus=${id}&page=<?php echo $currentPage; ?>${s ? '&sisipan=1' : ''}`; }); }
-    function konfirmasiLogout() { Swal.fire({ title: 'Logout?', text: "Keluar admin?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa' }).then((r) => { if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&logout=1"; } }); }
+    function konfirmasiHapus(id, no, s = false) {
+      Swal.fire({
+        title: 'Hapus Data?', text: "Hapus nomor " + no, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33',
+        customClass: { popup: 'my-swal', title: 'my-swal-title' }
+      }).then((r) => {
+        if (r.isConfirmed) window.location.href = `index.php?hapus=${id}&page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>${s ? '&sisipan=1' : ''}`;
+      });
+    }
+
+    function konfirmasiLogout() {
+      Swal.fire({
+        title: 'Logout?', text: "Keluar admin?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa',
+        customClass: { popup: 'my-swal', title: 'my-swal-title' }
+      }).then((r) => {
+        if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; }
+      });
+    }
 
     <?php if (isset($_GET['status'])): ?>
       const s = '<?php echo $_GET['status']; ?>';
@@ -674,8 +692,7 @@
       if (s === 'deleted') Swal.fire('Dihapus!', '', 'success');
       if (s === 'login_failed') Swal.fire('Gagal!', 'Cek kembali user/pass.', 'error');
 
-      // LOGIKA PEMBERSIH URL
-      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>";
+      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
       window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
     <?php endif; ?>
   </script>

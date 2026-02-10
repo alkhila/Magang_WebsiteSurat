@@ -2,15 +2,21 @@
 class Pengendali
 {
     private $conn;
-    private $table_name = "pengendali";
-    private $table_sisipan = "pengendali_sisipan";
+    private $table_name;
+    private $table_sisipan;
 
-    public function __construct($db)
+    public function __construct($db, $tipe = 'biasa')
     {
         $this->conn = $db;
+        if ($tipe === 'spt') {
+            $this->table_name = "pengendali_spt";
+            $this->table_sisipan = "pengendali_sisipan_spt";
+        } else {
+            $this->table_name = "pengendali";
+            $this->table_sisipan = "pengendali_sisipan";
+        }
     }
 
-    // --- FUNGSI LOGIN ADMIN ---
     public function login($username, $password)
     {
         $query = "SELECT * FROM admin WHERE username = ? AND password = ?";
@@ -19,7 +25,6 @@ class Pengendali
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // --- FUNGSI AMBIL SEMUA DATA (UNTUK PDF) ---
     public function getAllData()
     {
         $query = "SELECT * FROM " . $this->table_name . " ORDER BY no_urut ASC";
@@ -28,7 +33,6 @@ class Pengendali
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ... (Fungsi getSisipanById, create, update, delete tetap sama seperti kode sebelumnya) ...
     public function getSisipanById($id)
     {
         $query = "SELECT * FROM " . $this->table_sisipan . " WHERE no_urut = ?";
