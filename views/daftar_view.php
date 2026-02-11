@@ -231,14 +231,12 @@
       font-weight: 700;
     }
 
-    /* --- SWEETALERT SETTINGS --- */
     .swal2-popup.my-swal {
       padding: 0 !important;
       border-radius: 12px !important;
       width: 400px !important;
     }
 
-    /* Header Hitam (Hanya muncul jika class dipanggil) */
     .swal2-title.my-swal-title {
       background: #212529 !important;
       color: white !important;
@@ -251,14 +249,12 @@
       text-align: left !important;
     }
 
-    /* Padding Konten Khusus Export agar mepet horizontal */
     .swal2-html-container.my-swal-content-export {
       margin: 0 !important;
       text-align: left !important;
       padding: 40px 25px 0 25px !important;
     }
 
-    /* Tombol Align Kanan Khusus Export */
     .swal2-actions.my-swal-actions-export {
       padding: 0 25px 25px 25px !important;
       margin-top: 30px !important;
@@ -680,6 +676,8 @@
     function jalankanFilterDanCetak(filter) {
       document.body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
       let hasCol1 = false, hasCol2 = false, hasCol3 = false;
+
+      // Filter Tabel Utama
       document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
         let rowVisible = false;
         for (let g = 1; g <= 3; g++) {
@@ -692,10 +690,47 @@
         }
         if (!rowVisible) tr.classList.add('print-hidden-row'); else tr.classList.remove('print-hidden-row');
       });
+
+      // Filter Tabel Sisipan (Logika Baru)
+      const tableSisipan = document.getElementById('tableSisipan');
+      if (tableSisipan) {
+        let anySisipanVisible = false;
+        tableSisipan.querySelectorAll('tbody tr').forEach(tr => {
+          const noFull = tr.getAttribute('data-no-full');
+          const date = tr.getAttribute('data-date');
+          const noBase = parseInt(noFull);
+
+          let visible = false;
+          if (filter.type === 'date') {
+            visible = (date >= filter.start && date <= filter.end);
+          } else {
+            visible = (noBase >= filter.start && noBase <= filter.end);
+          }
+
+          if (visible) {
+            tr.classList.remove('print-hidden-row');
+            anySisipanVisible = true;
+          } else {
+            tr.classList.add('print-hidden-row');
+          }
+        });
+
+        const sectionSisipan = document.getElementById('sectionSisipan');
+        if (!anySisipanVisible) {
+          sectionSisipan.classList.add('d-print-none');
+        } else {
+          sectionSisipan.classList.remove('d-print-none');
+        }
+      }
+
       if (!hasCol1) document.body.classList.add('hide-col-1');
       if (!hasCol2) document.body.classList.add('hide-col-2');
       if (!hasCol3) document.body.classList.add('hide-col-3');
-      setTimeout(() => { window.print(); setTimeout(() => { location.reload(); }, 500); }, 500);
+
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => { location.reload(); }, 500);
+      }, 500);
     }
 
     function konfirmasiHapus(id, no, s = false) {
@@ -717,7 +752,7 @@
     <?php if (isset($_GET['status'])): ?>
       const s = '<?php echo $_GET['status']; ?>';
       if (s === 'exists') Swal.fire('Error', 'Nomor duplikat!', 'error');
-      if (s === 'success' || s === 'updated' || s === 'login_success') Swal.fire('Berhasil!', 'Data telah disimpan.', 'success');
+      if (s === 'success' || s === 'updated' || s === 'login_success') Swal.fire('Berhasil!', 'Data berhasil disimpan.', 'success');
       if (s === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
       if (s === 'login_failed') Swal.fire('Gagal!', 'Cek kembali user/pass.', 'error');
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
