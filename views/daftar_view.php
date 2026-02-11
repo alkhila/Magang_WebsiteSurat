@@ -198,7 +198,7 @@
     }
 
     .dropdown-item {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       padding: 10px 15px;
       border-radius: 6px;
@@ -206,9 +206,8 @@
       color: #334155;
     }
 
-    /* Hover Dropdown dikembalikan ke abu-abu */
     .dropdown-item:hover {
-      background-color: #e2e8f0;
+      background-color: #e1e4eb;
       color: #000;
     }
 
@@ -232,12 +231,14 @@
       font-weight: 700;
     }
 
+    /* --- SWEETALERT SETTINGS --- */
     .swal2-popup.my-swal {
       padding: 0 !important;
       border-radius: 12px !important;
       width: 400px !important;
     }
 
+    /* Header Hitam (Hanya muncul jika class dipanggil) */
     .swal2-title.my-swal-title {
       background: #212529 !important;
       color: white !important;
@@ -250,14 +251,19 @@
       text-align: left !important;
     }
 
-    .swal2-html-container.my-swal-content {
+    /* Padding Konten Khusus Export agar mepet horizontal */
+    .swal2-html-container.my-swal-content-export {
       margin: 0 !important;
       text-align: left !important;
+      padding: 40px 25px 0 25px !important;
     }
 
-    .swal2-actions {
-      padding-bottom: 25px !important;
-      margin-top: 10px !important;
+    /* Tombol Align Kanan Khusus Export */
+    .swal2-actions.my-swal-actions-export {
+      padding: 0 25px 25px 25px !important;
+      margin-top: 30px !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
     }
 
     .login-input-group {
@@ -478,7 +484,7 @@
   </div>
 
   <div class="modal fade" id="modalLogin" tabindex="-1">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow" style="border-radius: 12px;">
         <div class="modal-header bg-dark text-white">
           <h6 class="modal-title fw-bold">LOGIN ADMIN</h6><button type="button" class="btn-close btn-close-white"
@@ -584,11 +590,9 @@
       document.getElementById('is_sisipan').value = "1";
       document.getElementById('container_no_sisipan').style.display = "block";
       document.getElementById('container_tgl').style.display = "block";
-
       const inputSisipan = document.getElementById('display_no_sisipan');
       const tipeWeb = '<?php echo $currentType; ?>';
       inputSisipan.placeholder = (tipeWeb === 'spt') ? "Contoh: 12.1" : "Contoh: 12.A";
-
       formInput.reset(); modalCtrl.show();
     }
 
@@ -608,9 +612,24 @@
     function pilihRentangCetak() {
       Swal.fire({
         title: 'RENTANG WAKTU CETAK',
-        customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content' },
-        html: `<div class="p-4 pb-0 text-start"><div class="mb-4"><label class="form-label small fw-bold">TANGGAL MULAI</label><input type="date" id="swal_start" class="form-control shadow-none py-2"></div><div class="mb-2"><label class="form-label small fw-bold">TANGGAL SELESAI</label><input type="date" id="swal_end" class="form-control shadow-none py-2"></div></div>`,
-        showCancelButton: true, confirmButtonText: 'SIMPAN', cancelButtonText: 'BATAL', buttonsStyling: false,
+        customClass: {
+          popup: 'my-swal',
+          title: 'my-swal-title',
+          htmlContainer: 'my-swal-content-export',
+          actions: 'my-swal-actions-export'
+        },
+        html: `
+          <div class="text-start">
+            <div class="mb-4">
+              <label class="form-label small fw-bold d-block">RENTANG WAKTU MULAI</label>
+              <input type="date" id="swal_start" class="form-control shadow-none py-2 w-100">
+            </div>
+            <div class="mb-2">
+              <label class="form-label small fw-bold d-block">RENTANG WAKTU SELESAI</label>
+              <input type="date" id="swal_end" class="form-control shadow-none py-2 w-100">
+            </div>
+          </div>`,
+        showCancelButton: true, confirmButtonText: 'EXPORT', cancelButtonText: 'BATAL', buttonsStyling: false,
         didOpen: () => {
           Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
           Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark';
@@ -627,9 +646,24 @@
     function pilihNomorUrutCetak() {
       Swal.fire({
         title: 'NOMOR URUT CETAK',
-        customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content' },
-        html: `<div class="p-4 pb-0 text-start"><div class="mb-4"><label class="form-label small fw-bold">NOMOR MULAI</label><input type="number" id="no_start" class="form-control shadow-none py-2"></div><div class="mb-2"><label class="form-label small fw-bold">NOMOR SELESAI</label><input type="number" id="no_end" class="form-control shadow-none py-2"></div></div>`,
-        showCancelButton: true, confirmButtonText: 'SIMPAN', cancelButtonText: 'BATAL', buttonsStyling: false,
+        customClass: {
+          popup: 'my-swal',
+          title: 'my-swal-title',
+          htmlContainer: 'my-swal-content-export',
+          actions: 'my-swal-actions-export'
+        },
+        html: `
+          <div class="text-start">
+            <div class="mb-4">
+              <label class="form-label small fw-bold d-block">NOMOR AWAL</label>
+              <input type="number" id="no_start" class="form-control shadow-none py-2 w-100">
+            </div>
+            <div class="mb-2">
+              <label class="form-label small fw-bold d-block">NOMOR AKHIR</label>
+              <input type="number" id="no_end" class="form-control shadow-none py-2 w-100">
+            </div>
+          </div>`,
+        showCancelButton: true, confirmButtonText: 'EXPORT', cancelButtonText: 'BATAL', buttonsStyling: false,
         didOpen: () => {
           Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
           Swal.getCancelButton().className = 'btn btn-light small fw-bold order-1 text-dark';
@@ -646,7 +680,6 @@
     function jalankanFilterDanCetak(filter) {
       document.body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
       let hasCol1 = false, hasCol2 = false, hasCol3 = false;
-
       document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
         let rowVisible = false;
         for (let g = 1; g <= 3; g++) {
@@ -659,18 +692,15 @@
         }
         if (!rowVisible) tr.classList.add('print-hidden-row'); else tr.classList.remove('print-hidden-row');
       });
-
       if (!hasCol1) document.body.classList.add('hide-col-1');
       if (!hasCol2) document.body.classList.add('hide-col-2');
       if (!hasCol3) document.body.classList.add('hide-col-3');
-
       setTimeout(() => { window.print(); setTimeout(() => { location.reload(); }, 500); }, 500);
     }
 
     function konfirmasiHapus(id, no, s = false) {
       Swal.fire({
-        title: 'Hapus Data?', text: "Hapus nomor " + no, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33',
-        customClass: { popup: 'my-swal', title: 'my-swal-title' }
+        title: 'Hapus Data?', text: "Anda akan menghapus nomor " + no, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa'
       }).then((r) => {
         if (r.isConfirmed) window.location.href = `index.php?hapus=${id}&page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>${s ? '&sisipan=1' : ''}`;
       });
@@ -678,8 +708,7 @@
 
     function konfirmasiLogout() {
       Swal.fire({
-        title: 'Logout?', text: "Keluar admin?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa',
-        customClass: { popup: 'my-swal', title: 'my-swal-title' }
+        title: 'Logout?', text: "Keluar admin?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa'
       }).then((r) => {
         if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; }
       });
@@ -688,10 +717,9 @@
     <?php if (isset($_GET['status'])): ?>
       const s = '<?php echo $_GET['status']; ?>';
       if (s === 'exists') Swal.fire('Error', 'Nomor duplikat!', 'error');
-      if (s === 'success' || s === 'updated' || s === 'login_success') Swal.fire('Berhasil!', '', 'success');
-      if (s === 'deleted') Swal.fire('Dihapus!', '', 'success');
+      if (s === 'success' || s === 'updated' || s === 'login_success') Swal.fire('Berhasil!', 'Data telah disimpan.', 'success');
+      if (s === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
       if (s === 'login_failed') Swal.fire('Gagal!', 'Cek kembali user/pass.', 'error');
-
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
       window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
     <?php endif; ?>
