@@ -274,17 +274,20 @@
       box-shadow: none !important;
     }
 
+    /* --- PERBAIKAN TAMPILAN PRINT: 1-100 DALAM 1 HALAMAN DENGAN JARAK BARIS LEBIH LEGA --- */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 8mm;
+        margin: 5mm;
+        /* Margin luar dipersempit agar area konten lebih luas */
       }
 
       body {
         padding: 0 !important;
         margin: 0 !important;
         background-color: #fff !important;
-        zoom: 75%;
+        zoom: 90%;
+        /* Zoom dikurangi agar 100 baris muat meski jarak baris ditambah */
       }
 
       .main-card {
@@ -313,19 +316,48 @@
         display: none !important;
       }
 
+      .header-brand {
+        margin-bottom: 8px !important;
+        /* Jarak judul dipersingkat */
+      }
+
+      .header-brand h2 {
+        font-size: 16px !important;
+        border-bottom: 2px solid #000 !important;
+      }
+
+      .page-info {
+        top: 5px !important;
+        right: 10px !important;
+        font-size: 10px !important;
+      }
+
       .main-table {
         border: 2px solid #000 !important;
-        width: auto !important;
-        min-width: 60% !important;
-        margin: 0 auto !important;
+        width: 100% !important;
         display: table !important;
         table-layout: auto !important;
+        margin: 0 auto !important;
       }
 
       .main-table th,
       .main-table td {
         border: 1px solid #000 !important;
-        padding: 3px 6px !important;
+        padding: 3.5px 4px !important;
+        /* Padding baris ditambah sedikit (tadinya 2px) */
+        font-size: 8px !important;
+        /* Ukuran font tetap kecil agar baris tidak bengkak */
+        line-height: 1.1 !important;
+        /* Line height ditambah sedikit agar tidak terlalu mepet */
+      }
+
+      #sectionSisipan {
+        margin-top: 8px !important;
+      }
+
+      #sectionSisipan h5 {
+        font-size: 10px !important;
+        margin-bottom: 4px !important;
       }
     }
   </style>
@@ -542,7 +574,7 @@
               <select name="plus" id="input_plus" class="form-select" required>
                 <option value="" disabled selected>Pilih Bidang...</option>
                 <option value="Bidang Perpustakaan">Bidang Perpustakaan</option>
-                <option value="Bidang Arsip">Bidang Arsip</option>
+                <option value="Bidang Arsip">Bidang Kearsipan</option>
                 <option value="Bidang PSP">Bidang PSP</option>
                 <option value="Sub Bagian KPE">Sub Bagian KPE</option>
                 <option value="Sub Bagian Umum dan Kepegawaian">Sub Bagian Umum dan Kepegawaian</option>
