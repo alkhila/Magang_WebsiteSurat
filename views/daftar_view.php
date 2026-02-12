@@ -315,14 +315,17 @@
 
       .main-table {
         border: 2px solid #000 !important;
-        width: 100% !important;
+        width: auto !important;
+        min-width: 60% !important;
+        margin: 0 auto !important;
         display: table !important;
+        table-layout: auto !important;
       }
 
       .main-table th,
       .main-table td {
         border: 1px solid #000 !important;
-        padding: 3px 2px !important;
+        padding: 3px 6px !important;
       }
     }
   </style>
@@ -497,8 +500,8 @@
               <label class="form-label small fw-bold">PASSWORD</label>
               <div class="login-input-group">
                 <input type="password" name="password" id="loginPassword" class="form-control" required>
-                <span class="input-group-text" onclick="togglePassword()"><i class="bi bi-eye-slash"
-                    id="toggleIcon"></i></span>
+                <span class="input-group-text" onclick="togglePassword()" style="cursor: pointer;"><i
+                    class="bi bi-eye-slash" id="toggleIcon"></i></span>
               </div>
             </div>
           </div>
@@ -691,7 +694,7 @@
         if (!rowVisible) tr.classList.add('print-hidden-row'); else tr.classList.remove('print-hidden-row');
       });
 
-      // Filter Tabel Sisipan (Logika Baru)
+      // Filter Tabel Sisipan
       const tableSisipan = document.getElementById('tableSisipan');
       if (tableSisipan) {
         let anySisipanVisible = false;
@@ -751,10 +754,22 @@
 
     <?php if (isset($_GET['status'])): ?>
       const s = '<?php echo $_GET['status']; ?>';
-      if (s === 'exists') Swal.fire('Error', 'Nomor duplikat!', 'error');
-      if (s === 'success' || s === 'updated' || s === 'login_success') Swal.fire('Berhasil!', 'Data berhasil disimpan.', 'success');
-      if (s === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
-      if (s === 'login_failed') Swal.fire('Gagal!', 'Cek kembali user/pass.', 'error');
+      if (s === 'exists') {
+        Swal.fire('Error', 'Nomor duplikat!', 'error');
+      } else if (s === 'login_success') {
+        Swal.fire({
+          title: 'Selamat Datang!',
+          text: 'Login admin berhasil dilakukan.',
+          icon: 'success',
+          confirmButtonColor: '#212529'
+        });
+      } else if (s === 'success' || s === 'updated') {
+        Swal.fire('Berhasil!', 'Data telah disimpan.', 'success');
+      } else if (s === 'deleted') {
+        Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
+      } else if (s === 'login_failed') {
+        Swal.fire('Gagal!', 'Cek kembali user/pass.', 'error');
+      }
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
       window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
     <?php endif; ?>
