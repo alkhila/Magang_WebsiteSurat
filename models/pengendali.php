@@ -67,15 +67,16 @@ class Pengendali
 
     public function getNextAvailableNo($page)
     {
-        $start = ($page * 100) + 1;
-        $end = $start + 99;
-        $query = "SELECT MAX(no_urut) as terakhir FROM " . $this->table_name . " WHERE no_urut BETWEEN ? AND ?";
+        $query = "SELECT MAX(no_urut) as terakhir FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
-        $stmt->execute([$start, $end]);
+        $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row['terakhir'])
-            return $start;
-        return ($row['terakhir'] >= $end) ? false : $row['terakhir'] + 1;
+
+        if (!$row['terakhir']) {
+            return 1;
+        }
+
+        return $row['terakhir'] + 1;
     }
 
     public function getByPage($page)

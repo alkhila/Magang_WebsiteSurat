@@ -27,6 +27,22 @@
       padding: 40px 15px;
     }
 
+    /* --- PERBAIKAN HIGHLIGHT MEMUDAR --- */
+    @keyframes highlightFade {
+      0% {
+        background-color: #fef9c3;
+      }
+
+      100% {
+        background-color: transparent;
+      }
+    }
+
+    /* Menerapkan animasi 2 detik saat baris dituju lewat URL Anchor */
+    :target td {
+      animation: highlightFade 5s ease-in-out forwards;
+    }
+
     .main-card {
       background: #fff;
       border-radius: 12px;
@@ -274,12 +290,10 @@
       box-shadow: none !important;
     }
 
-    /* --- PERBAIKAN TAMPILAN PRINT: 1-100 DALAM 1 HALAMAN DENGAN JARAK BARIS LEBIH LEGA --- */
     @media print {
       @page {
         size: A4 portrait;
         margin: 5mm;
-        /* Margin luar dipersempit agar area konten lebih luas */
       }
 
       body {
@@ -287,7 +301,6 @@
         margin: 0 !important;
         background-color: #fff !important;
         zoom: 90%;
-        /* Zoom dikurangi agar 100 baris muat meski jarak baris ditambah */
       }
 
       .main-card {
@@ -318,7 +331,6 @@
 
       .header-brand {
         margin-bottom: 8px !important;
-        /* Jarak judul dipersingkat */
       }
 
       .header-brand h2 {
@@ -344,11 +356,8 @@
       .main-table td {
         border: 1px solid #000 !important;
         padding: 3.5px 4px !important;
-        /* Padding baris ditambah sedikit (tadinya 2px) */
         font-size: 8px !important;
-        /* Ukuran font tetap kecil agar baris tidak bengkak */
         line-height: 1.1 !important;
-        /* Line height ditambah sedikit agar tidak terlalu mepet */
       }
 
       #sectionSisipan {
@@ -446,7 +455,8 @@
                   $dataDate = ($tRaw && $tRaw != '0000-00-00 00:00:00') ? date('Y-m-d', strtotime($tRaw)) : '';
                   $tDisplay = ($dataDate) ? date('d-m-y', strtotime($tRaw)) : '';
                   ?>
-                  <td class="col-group-<?php echo $r['g']; ?> no-column <?php echo $divider; ?>"
+                  <td id="data-<?php echo $curr_no; ?>"
+                    class="col-group-<?php echo $r['g']; ?> no-column <?php echo $divider; ?>"
                     data-no="<?php echo $curr_no; ?>" data-date="<?php echo $dataDate; ?>"><?php echo $curr_no; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>" data-no="<?php echo $curr_no; ?>"
                     data-date="<?php echo $dataDate; ?>"><?php echo $k; ?></td>
@@ -492,7 +502,8 @@
               <?php foreach ($sisipanData as $s):
                 $sDate = date('Y-m-d', strtotime($s['tanggal_manual']));
                 ?>
-                <tr data-no-full="<?php echo $s['no_urut']; ?>" data-date="<?php echo $sDate; ?>">
+                <tr id="data-<?php echo $s['no_urut']; ?>" data-no-full="<?php echo $s['no_urut']; ?>"
+                  data-date="<?php echo $sDate; ?>">
                   <td class="fw-bold"><?php echo $s['no_urut']; ?></td>
                   <td><?php echo $s['klas']; ?></td>
                   <td><?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?></td>
@@ -574,7 +585,7 @@
               <select name="plus" id="input_plus" class="form-select" required>
                 <option value="" disabled selected>Pilih Bidang...</option>
                 <option value="Bidang Perpustakaan">Bidang Perpustakaan</option>
-                <option value="Bidang Arsip">Bidang Kearsipan</option>
+                <option value="Bidang Kearsipan">Bidang Kearsipan</option>
                 <option value="Bidang PSP">Bidang PSP</option>
                 <option value="Sub Bagian KPE">Sub Bagian KPE</option>
                 <option value="Sub Bagian Umum dan Kepegawaian">Sub Bagian Umum dan Kepegawaian</option>
@@ -643,23 +654,8 @@
     function pilihRentangCetak() {
       Swal.fire({
         title: 'RENTANG WAKTU CETAK',
-        customClass: {
-          popup: 'my-swal',
-          title: 'my-swal-title',
-          htmlContainer: 'my-swal-content-export',
-          actions: 'my-swal-actions-export'
-        },
-        html: `
-          <div class="text-start">
-            <div class="mb-4">
-              <label class="form-label small fw-bold d-block">RENTANG WAKTU MULAI</label>
-              <input type="date" id="swal_start" class="form-control shadow-none py-2 w-100">
-            </div>
-            <div class="mb-2">
-              <label class="form-label small fw-bold d-block">RENTANG WAKTU SELESAI</label>
-              <input type="date" id="swal_end" class="form-control shadow-none py-2 w-100">
-            </div>
-          </div>`,
+        customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content-export', actions: 'my-swal-actions-export' },
+        html: `<div class="text-start"><div class="mb-4"><label class="form-label small fw-bold d-block">MULAI</label><input type="date" id="swal_start" class="form-control shadow-none py-2 w-100"></div><div class="mb-2"><label class="form-label small fw-bold d-block">SELESAI</label><input type="date" id="swal_end" class="form-control shadow-none py-2 w-100"></div></div>`,
         showCancelButton: true, confirmButtonText: 'EXPORT', cancelButtonText: 'BATAL', buttonsStyling: false,
         didOpen: () => {
           Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
@@ -677,23 +673,8 @@
     function pilihNomorUrutCetak() {
       Swal.fire({
         title: 'NOMOR URUT CETAK',
-        customClass: {
-          popup: 'my-swal',
-          title: 'my-swal-title',
-          htmlContainer: 'my-swal-content-export',
-          actions: 'my-swal-actions-export'
-        },
-        html: `
-          <div class="text-start">
-            <div class="mb-4">
-              <label class="form-label small fw-bold d-block">NOMOR AWAL</label>
-              <input type="number" id="no_start" class="form-control shadow-none py-2 w-100">
-            </div>
-            <div class="mb-2">
-              <label class="form-label small fw-bold d-block">NOMOR AKHIR</label>
-              <input type="number" id="no_end" class="form-control shadow-none py-2 w-100">
-            </div>
-          </div>`,
+        customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content-export', actions: 'my-swal-actions-export' },
+        html: `<div class="text-start"><div class="mb-4"><label class="form-label small fw-bold d-block">NOMOR AWAL</label><input type="number" id="no_start" class="form-control shadow-none py-2 w-100"></div><div class="mb-2"><label class="form-label small fw-bold d-block">NOMOR AKHIR</label><input type="number" id="no_end" class="form-control shadow-none py-2 w-100"></div></div>`,
         showCancelButton: true, confirmButtonText: 'EXPORT', cancelButtonText: 'BATAL', buttonsStyling: false,
         didOpen: () => {
           Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
@@ -711,8 +692,6 @@
     function jalankanFilterDanCetak(filter) {
       document.body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
       let hasCol1 = false, hasCol2 = false, hasCol3 = false;
-
-      // Filter Tabel Utama
       document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
         let rowVisible = false;
         for (let g = 1; g <= 3; g++) {
@@ -725,85 +704,35 @@
         }
         if (!rowVisible) tr.classList.add('print-hidden-row'); else tr.classList.remove('print-hidden-row');
       });
-
-      // Filter Tabel Sisipan
-      const tableSisipan = document.getElementById('tableSisipan');
-      if (tableSisipan) {
-        let anySisipanVisible = false;
-        tableSisipan.querySelectorAll('tbody tr').forEach(tr => {
-          const noFull = tr.getAttribute('data-no-full');
-          const date = tr.getAttribute('data-date');
-          const noBase = parseInt(noFull);
-
-          let visible = false;
-          if (filter.type === 'date') {
-            visible = (date >= filter.start && date <= filter.end);
-          } else {
-            visible = (noBase >= filter.start && noBase <= filter.end);
-          }
-
-          if (visible) {
-            tr.classList.remove('print-hidden-row');
-            anySisipanVisible = true;
-          } else {
-            tr.classList.add('print-hidden-row');
-          }
-        });
-
-        const sectionSisipan = document.getElementById('sectionSisipan');
-        if (!anySisipanVisible) {
-          sectionSisipan.classList.add('d-print-none');
-        } else {
-          sectionSisipan.classList.remove('d-print-none');
-        }
-      }
-
       if (!hasCol1) document.body.classList.add('hide-col-1');
       if (!hasCol2) document.body.classList.add('hide-col-2');
       if (!hasCol3) document.body.classList.add('hide-col-3');
-
-      setTimeout(() => {
-        window.print();
-        setTimeout(() => { location.reload(); }, 500);
-      }, 500);
+      setTimeout(() => { window.print(); setTimeout(() => { location.reload(); }, 500); }, 500);
     }
 
     function konfirmasiHapus(id, no, s = false) {
-      Swal.fire({
-        title: 'Hapus Data?', text: "Anda akan menghapus nomor " + no, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa'
-      }).then((r) => {
-        if (r.isConfirmed) window.location.href = `index.php?hapus=${id}&page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>${s ? '&sisipan=1' : ''}`;
-      });
+      Swal.fire({ title: 'Hapus Data?', text: "Anda akan menghapus nomor " + no, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa' })
+        .then((r) => { if (r.isConfirmed) window.location.href = `index.php?hapus=${id}&page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>${s ? '&sisipan=1' : ''}`; });
     }
 
     function konfirmasiLogout() {
-      Swal.fire({
-        title: 'Logout?', text: "Keluar admin?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa'
-      }).then((r) => {
-        if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; }
-      });
+      Swal.fire({ title: 'Logout?', text: "Keluar admin?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa' })
+        .then((r) => { if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; } });
     }
 
     <?php if (isset($_GET['status'])): ?>
       const s = '<?php echo $_GET['status']; ?>';
-      if (s === 'exists') {
-        Swal.fire('Error', 'Nomor duplikat!', 'error');
-      } else if (s === 'login_success') {
-        Swal.fire({
-          title: 'Selamat Datang!',
-          text: 'Login admin berhasil dilakukan.',
-          icon: 'success',
-          confirmButtonColor: '#212529'
-        });
-      } else if (s === 'success' || s === 'updated') {
-        Swal.fire('Berhasil!', 'Data telah disimpan.', 'success');
-      } else if (s === 'deleted') {
-        Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
-      } else if (s === 'login_failed') {
-        Swal.fire('Gagal!', 'Cek kembali user/pass.', 'error');
-      }
-      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
-      window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+      if (s === 'exists') Swal.fire('Error', 'Nomor duplikat!', 'error');
+      else if (s === 'login_success') Swal.fire({ title: 'Selamat Datang!', text: 'Login admin berhasil.', icon: 'success', confirmButtonColor: '#212529' });
+      else if (s === 'success' || s === 'updated') Swal.fire('Berhasil!', 'Data telah disimpan.', 'success');
+      else if (s === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
+      else if (s === 'login_failed') Swal.fire('Gagal!', 'Cek kembali user/pass.', 'error');
+
+      /* --- PERSIAPAN PEMBERSIHAN URL --- */
+      const baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
+      setTimeout(() => {
+        window.history.replaceState(null, document.title, baseUrl);
+      }, 2000);
     <?php endif; ?>
   </script>
 </body>

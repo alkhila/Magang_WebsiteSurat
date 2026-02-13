@@ -32,7 +32,6 @@ class PengendaliController
         if (isset($_POST['login'])) {
             $username = $_POST['username'];
             $password = $_POST['password'];
-
             $admin = $this->model->login($username, $password);
 
             if ($admin) {
@@ -60,11 +59,13 @@ class PengendaliController
                         exit();
                     }
                     $this->model->createSisipan($no_urut, $klas, $plus, $tgl);
+                    header("Location: index.php?page=$page&type=$tipe&status=success#data-" . $no_urut);
                 } else {
                     $no_urut = $this->model->getNextAvailableNo($page);
                     $this->model->create($no_urut, $klas, $plus, null);
+                    $targetPage = floor(($no_urut - 1) / 100);
+                    header("Location: index.php?page=$targetPage&type=$tipe&status=success#data-" . $no_urut);
                 }
-                header("Location: index.php?page=$page&type=$tipe&status=success");
             } else if ($aksi == 'edit') {
                 $no_urut = $_POST['no_urut'];
                 if ($is_sisipan) {
@@ -72,7 +73,7 @@ class PengendaliController
                 } else {
                     $this->model->update($no_urut, $klas, $plus, null);
                 }
-                header("Location: index.php?page=$page&type=$tipe&status=updated");
+                header("Location: index.php?page=$page&type=$tipe&status=updated#data-" . $no_urut);
             }
             exit();
         }
@@ -105,3 +106,4 @@ class PengendaliController
         include 'views/daftar_view.php';
     }
 }
+?>
