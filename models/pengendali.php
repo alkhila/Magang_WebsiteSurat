@@ -79,6 +79,21 @@ class Pengendali
         return $row['terakhir'] + 1;
     }
 
+    // Fungsi baru untuk mendapatkan index halaman terakhir yang ada datanya
+    public function getLastFilledPage()
+    {
+        $query = "SELECT MAX(no_urut) as terakhir FROM " . $this->table_name;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row['terakhir'] || $row['terakhir'] == 0) {
+            return 0;
+        }
+
+        return floor(($row['terakhir'] - 1) / 100);
+    }
+
     public function getByPage($page)
     {
         $start = ($page * 100) + 1;

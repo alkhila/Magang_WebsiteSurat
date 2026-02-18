@@ -81,5 +81,6 @@ if (!isset($_GET['type'])) {
 $controller = new PengendaliController();
 $controller->handleRequest();
 
-$page = isset($_GET['page']) ? (int) $_GET['page'] : 0;
+// Default null agar controller bisa mendeteksi akses pertama kali
+$page = isset($_GET['page']) ? (int) $_GET['page'] : null;
 $controller->index($page);

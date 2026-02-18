@@ -89,8 +89,13 @@ class PengendaliController
         }
     }
 
-    public function index($page = 0)
+    public function index($page = null)
     {
+        // Jika pertama kali masuk (parameter page tidak ada), cari halaman terakhir
+        if ($page === null) {
+            $page = $this->model->getLastFilledPage();
+        }
+
         $mainDataRaw = $this->model->getByPage($page);
         $sisipanData = $this->model->getSisipanByPage($page);
         $data = [];
