@@ -29,7 +29,7 @@
 
     /* --- ANIMASI HIGHLIGHT MEMUDAR (Hanya untuk Sisipan) --- */
     @keyframes highlightFade {
-      0% { background-color: #fef9c3; }
+      0% { background-color: #cbd5e1; }
       100% { background-color: transparent; }
     }
 
