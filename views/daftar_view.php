@@ -28,10 +28,9 @@
       padding: 40px 15px;
     }
 
-    /* --- ANIMASI HIGHLIGHT MEMUDAR --- */
     @keyframes highlightFade {
       0% {
-        background-color: #fef9c3;
+        background-color: #e1e4eb;
       }
 
       100% {
@@ -40,7 +39,11 @@
     }
 
     .highlight-sisipan {
-      animation: highlightFade 5s ease-in-out forwards;
+      animation: highlightFade 6s ease-in-out forwards;
+    }
+
+    .highlight-saved {
+      animation: highlightFade 6s ease-in-out forwards;
     }
 
     .main-card {
@@ -76,22 +79,18 @@
       padding-bottom: 5px;
     }
 
-    /* --- STYLING NAVIGASI --- */
     .pagination-nav {
       margin-bottom: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Menengahkan navigasi */
       gap: 30px;
-      /* Memperlebar jarak antar elemen navigasi */
     }
 
     .page-numbers-container {
       display: flex;
       align-items: center;
-      gap: 20px;
-      /* Memperlebar jarak antar nomor */
+      gap: 25px;
     }
 
     .page-number {
@@ -134,7 +133,6 @@
       color: #fff;
     }
 
-    /* --- TABLE STYLES --- */
     .table-responsive {
       border: 2px solid #000;
       border-radius: 4px;
@@ -308,52 +306,71 @@
       box-shadow: none !important;
     }
 
+    /* --- PRINT STYLES --- */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 5mm;
+        margin: 15mm;
+        /* Margin standar kertas agar tidak terpotong */
       }
 
       body {
-        padding: 0 !important;
         margin: 0 !important;
-        background-color: #fff !important;
-        zoom: 90%;
+        padding: 0 !important;
       }
 
-      .main-card {
+      body * {
+        visibility: hidden !important;
+      }
+
+      #printArea,
+      #printArea * {
+        visibility: visible !important;
+      }
+
+      #printArea {
+        position: static !important;
+        /* Gunakan static agar margin @page bekerja sempurna */
+        width: 100% !important;
+        display: block !important;
+        margin: 0 !important;
         padding: 0 !important;
+      }
+
+      .print-page {
+        page-break-after: always;
+        width: 100% !important;
+      }
+
+      /* Remove box styling from main-card in print */
+      .main-card {
+        background: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
 
-      .d-print-none,
-      .top-admin-bar,
-      .pagination-nav,
-      .action-buttons-container,
-      .btn-action-edit,
-      .btn-action-delete {
-        display: none !important;
+      /* Remove box styling from table-responsive in print */
+      .table-responsive {
+        border: none !important;
+        background: transparent !important;
       }
 
-      .header-brand h2 {
-        font-size: 16px !important;
-        border-bottom: 2px solid #000 !important;
-      }
-
+      /* Pastikan tabel memenuhi lebar halaman yang tersedia */
       .main-table {
         border: 2px solid #000 !important;
         width: 100% !important;
-        display: table !important;
-        table-layout: auto !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
       }
 
       .main-table th,
       .main-table td {
         border: 1px solid #000 !important;
-        padding: 3.5px 4px !important;
-        font-size: 8px !important;
+        padding: 4px !important;
+        font-size: 9px !important;
+        color: #000 !important;
       }
 
       .print-hidden-row {
@@ -364,6 +381,8 @@
 </head>
 
 <body>
+  <div id="printArea" style="display: none;"></div>
+
   <div class="container-fluid d-print-none top-admin-bar mb-3" style="max-width: 1450px;">
     <div class="d-flex justify-content-between align-items-center">
       <a href="index.php" class="btn btn-sm btn-outline-secondary fw-bold" style="font-size: 11px;">
@@ -391,13 +410,13 @@
     </div>
   </div>
 
-  <div class="main-card">
+  <div class="main-card d-print-none">
     <div class="page-info">HALAMAN : <?php echo str_pad($currentPage, 2, "0", STR_PAD_LEFT); ?></div>
     <div class="header-brand">
       <h2>Daftar Pengendali Surat Keluar <?php echo strtoupper($currentType); ?></h2>
     </div>
 
-    <div class="pagination-nav d-print-none">
+    <div class="pagination-nav">
       <?php if ($currentPage > 0): ?>
         <a href="index.php?page=<?php echo $currentPage - 1; ?>&type=<?php echo $currentType; ?>"
           class="btn-outline-black">SEBELUMNYA</a>
@@ -407,13 +426,12 @@
         <?php
         $startPage = max(0, $currentPage - 2);
         $endPage = $startPage + 4;
-
         for ($i = $startPage; $i <= $endPage; $i++):
           $isActive = ($i == $currentPage);
           ?>
           <a href="index.php?page=<?php echo $i; ?>&type=<?php echo $currentType; ?>"
             class="page-number <?php echo $isActive ? 'active' : ''; ?>">
-            <?php echo $i; // Halaman dimulai dari 0 sesuai permintaan ?>
+            <?php echo $i; ?>
           </a>
         <?php endfor; ?>
         <span class="text-secondary fw-bold">...</span>
@@ -423,7 +441,7 @@
         class="btn-outline-black">SELANJUTNYA</a>
     </div>
 
-    <div class="d-flex justify-content-end mb-4 d-print-none action-buttons-container">
+    <div class="d-flex justify-content-end mb-4 action-buttons-container">
       <button class="btn btn-sisipan-custom me-2 fw-bold" onclick="bukaModalSisipan()">+ SISIPAN</button>
       <button class="btn-modern-add fw-bold" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
     </div>
@@ -437,7 +455,7 @@
               <th class="col-group-<?php echo $k; ?>" width="75">Klasifikasi</th>
               <th class="col-group-<?php echo $k; ?>" width="80">Tanggal</th>
               <th class="col-group-<?php echo $k; ?>" width="120">Ket (+)</th>
-              <th class="col-group-<?php echo $k; ?> d-print-none" width="85">Aksi</th>
+              <th class="col-group-<?php echo $k; ?>" width="85">Aksi</th>
             <?php endfor; ?>
           </tr>
         </thead>
@@ -458,14 +476,15 @@
                   $dataDate = ($tRaw && $tRaw != '0000-00-00 00:00:00') ? date('Y-m-d', strtotime($tRaw)) : '';
                   $tDisplay = ($dataDate) ? date('d-m-y', strtotime($tRaw)) : '';
                   ?>
-                  <td id="data-<?php echo $curr_no; ?>"
-                    class="col-group-<?php echo $r['g']; ?> no-column <?php echo $divider; ?>"
+                  <td class="col-group-<?php echo $r['g']; ?> no-column <?php echo $divider; ?>"
                     data-no="<?php echo $curr_no; ?>" data-date="<?php echo $dataDate; ?>"><?php echo $curr_no; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>"><?php echo $k; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>"><?php echo $tDisplay; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>"><?php echo $p; ?></td>
-                  <td class="col-group-<?php echo $r['g']; ?> d-print-none">
-                    <?php if (isset($data[$curr_no])): ?>
+                  <td class="col-group-<?php echo $r['g']; ?>">
+                    <?php
+                    $hasData = trim($k) !== '' || trim($p) !== '' || trim($tDisplay) !== '';
+                    if ($hasData): ?>
                       <button class="btn-action-edit"
                         onclick="bukaModalEdit('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', '<?php echo $k; ?>', '<?php echo $p; ?>', '', false)">EDIT</button>
                       <?php if (isset($_SESSION['admin_id'])): ?>
@@ -495,7 +514,7 @@
                 <th>Klasifikasi</th>
                 <th>Tanggal</th>
                 <th>Ket (+)</th>
-                <th width="140" class="d-print-none">Aksi</th>
+                <th width="140">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -507,7 +526,7 @@
                   <td><?php echo $s['klas']; ?></td>
                   <td><?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?></td>
                   <td><?php echo $s['plus']; ?></td>
-                  <td class="d-print-none">
+                  <td>
                     <button class="btn-action-edit"
                       onclick="bukaModalEdit('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', '<?php echo $s['klas']; ?>', '<?php echo $s['plus']; ?>', '<?php echo $s['tanggal_manual']; ?>', true)">EDIT</button>
                     <?php if (isset($_SESSION['admin_id'])): ?>
@@ -606,6 +625,64 @@
     const modalCtrl = new bootstrap.Modal(document.getElementById('modalData'));
     const formInput = document.getElementById('formInput');
 
+    // store target row identifier before submitting form so we can scroll after reload
+    if (formInput) {
+      formInput.addEventListener('submit', function (e) {
+        // prefer explicit input_no, otherwise try display_no_sisipan
+        const no = document.getElementById('input_no') ? document.getElementById('input_no').value : '';
+        const displayNo = document.getElementById('display_no_sisipan') ? document.getElementById('display_no_sisipan').value : '';
+        const target = no && no.trim() !== '' ? no.trim() : (displayNo && displayNo.trim() !== '' ? displayNo.trim() : '');
+        if (target) {
+          try { sessionStorage.setItem('scrollTo', target); } catch (err) { /* ignore */ }
+        }
+      });
+    }
+
+    // on load, scroll to target row if set and highlight it
+    document.addEventListener('DOMContentLoaded', function () {
+      try {
+        // priority 1: check hash fragment generated by server redirect (e.g. #data-123)
+        let target = null;
+        if (window.location.hash && window.location.hash.indexOf('#data-') === 0) {
+          target = window.location.hash.replace('#data-', '');
+        }
+
+        // priority 2: check URL param highlight (optional)
+        if (!target) {
+          const params = new URLSearchParams(window.location.search);
+          if (params.has('highlight')) target = params.get('highlight');
+        }
+
+        // fallback: sessionStorage from client-side submit
+        if (!target) target = sessionStorage.getItem('scrollTo');
+
+        if (target) {
+          try { sessionStorage.removeItem('scrollTo'); } catch (e) { }
+
+          // try to find element by data-no attribute (td or tr)
+          let el = document.querySelector('[data-no="' + target + '"]');
+          if (!el) {
+            // try sisipan id format
+            const sisId = 'sisipan-' + target.replace(/\./g, '-');
+            el = document.getElementById(sisId);
+          }
+
+          if (el) {
+            // find the row element to highlight
+            let row = el.tagName.toLowerCase() === 'tr' ? el : el.closest('tr');
+            if (row) {
+              // scroll into center of page
+              row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // add highlight class to row
+              row.classList.add('highlight-saved');
+              // remove class after animation end as fallback
+              setTimeout(() => { row.classList.remove('highlight-saved'); }, 4500);
+            }
+          }
+        }
+      } catch (err) { /* ignore errors */ }
+    });
+
     function togglePassword() {
       const input = document.getElementById('loginPassword');
       const icon = document.getElementById('toggleIcon');
@@ -676,7 +753,7 @@
           if (!start || !end) { Swal.showValidationMessage('Isi kedua tanggal!'); }
           return { type: 'date', start, end };
         }
-      }).then((result) => { if (result.isConfirmed) jalankanFilterDanCetak(result.value); });
+      }).then((result) => { if (result.isConfirmed) prepareExport(result.value); });
     }
 
     function pilihNomorUrutCetak() {
@@ -695,39 +772,148 @@
           if (!start || !end) { Swal.showValidationMessage('Isi kedua nomor!'); }
           return { type: 'number', start: parseInt(start), end: parseInt(end) };
         }
-      }).then((result) => { if (result.isConfirmed) jalankanFilterDanCetak(result.value); });
+      }).then((result) => { if (result.isConfirmed) prepareExport(result.value); });
     }
 
-    function jalankanFilterDanCetak(filter) {
-      document.body.classList.remove('hide-col-1', 'hide-col-2', 'hide-col-3');
-      let hasCol1 = false, hasCol2 = false, hasCol3 = false;
+    async function prepareExport(filter) {
+      const printArea = document.getElementById('printArea');
+      printArea.innerHTML = '';
 
-      document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
-        let rowVisible = false;
-        for (let g = 1; g <= 3; g++) {
-          const cells = tr.querySelectorAll(`.col-group-${g}`);
-          if (cells.length === 0) continue;
-          const no = parseInt(cells[0].getAttribute('data-no'));
-          const date = cells[0].getAttribute('data-date');
+      let startP, endP;
+      if (filter.type === 'number') {
+        startP = Math.floor((filter.start - 1) / 100);
+        endP = Math.floor((filter.end - 1) / 100);
+      } else {
+        startP = 0; endP = 15;
+      }
 
-          let visible = (filter.type === 'date') ? (date >= filter.start && date <= filter.end) : (no >= filter.start && no <= filter.end);
-          if (visible) { rowVisible = true; if (g == 1) hasCol1 = true; if (g == 2) hasCol2 = true; if (g == 3) hasCol3 = true; }
+      for (let p = startP; p <= endP; p++) {
+        const res = await fetch(`index.php?page=${p}&type=<?php echo $currentType; ?>`);
+        const text = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+
+        const mainTable = doc.querySelector('#mainTable');
+        if (mainTable) {
+          const rows = mainTable.querySelectorAll('tbody tr');
+          let filteredRows = [];
+
+          // Cek data yang masuk filter
+          rows.forEach(tr => {
+            let rowHasData = false;
+            tr.querySelectorAll('td[data-no]').forEach(td => {
+              const no = parseInt(td.getAttribute('data-no'));
+              const date = td.getAttribute('data-date');
+              if (filter.type === 'number' ? (no >= filter.start && no <= filter.end) : (date >= filter.start && date <= filter.end)) {
+                if (td.innerText.trim() !== "") rowHasData = true;
+              }
+            });
+            if (rowHasData) filteredRows.push(tr);
+          });
+
+          // Tentukan jumlah kolom (grup) yang dibutuhkan
+          let maxGroupsNeeded = 1;
+          filteredRows.forEach(tr => {
+            for (let g = 1; g <= 3; g++) {
+              const noCell = tr.querySelector(`.col-group-${g}.no-column`);
+              if (noCell && noCell.innerText.trim() !== "") {
+                const noVal = parseInt(noCell.innerText);
+                const isMatch = filter.type === 'number' ? (noVal >= filter.start && noVal <= filter.end) : true;
+                if (isMatch) maxGroupsNeeded = Math.max(maxGroupsNeeded, g);
+              }
+            }
+          });
+
+          const sisipanSection = doc.querySelector('#sectionSisipan');
+          let sisipanClone = null;
+          if (sisipanSection) {
+            sisipanClone = sisipanSection.cloneNode(true);
+            sisipanClone.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
+            let hasSisipanData = false;
+            sisipanClone.querySelectorAll('tbody tr').forEach(tr => {
+              const no = parseFloat(tr.getAttribute('data-no'));
+              const date = tr.getAttribute('data-date');
+              if (filter.type === 'number' ? (no >= filter.start && no <= filter.end) : (date >= filter.start && date <= filter.end)) hasSisipanData = true;
+              else tr.remove();
+            });
+            if (!hasSisipanData) sisipanClone = null;
+          }
+
+          if (filteredRows.length > 0 || sisipanClone) {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'print-page';
+
+            // header/title and page number
+            const headerDiv = document.createElement('div');
+            headerDiv.style.textAlign = 'center';
+            headerDiv.style.marginBottom = '10px';
+            headerDiv.innerHTML = `
+              <h3 class="fw-bold">DAFTAR PENGENDALI SURAT KELUAR <?php echo strtoupper($currentType); ?></h3>
+              <div class="fw-bold">HALAMAN: ${String(p).padStart(2, '0')}</div>
+              <hr style="border: 2px solid #000; opacity: 1;">
+            `;
+            pageDiv.appendChild(headerDiv);
+
+            const tableClone = document.createElement('table');
+            tableClone.className = 'main-table text-center';
+            // make export table span whole area so it always looks wide
+            tableClone.style.width = '100%';
+            tableClone.style.margin = '0 auto';
+
+            // wrap everything in a card to mirror normal web layout
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'main-card';
+            cardDiv.style.padding = '20px';
+
+            // Render Header Dinamis
+            let headHTML = '<thead><tr>';
+            for (let g = 1; g <= maxGroupsNeeded; g++) {
+              headHTML += `<th class="${g > 1 ? 'col-divider' : ''}" width="35">No</th><th width="75">Klasifikasi</th><th width="80">Tanggal</th><th width="120">Ket (+)</th>`;
+            }
+            headHTML += '</tr></thead>';
+            tableClone.innerHTML = headHTML;
+
+            // Render Body Dinamis
+            const tbody = document.createElement('tbody');
+            filteredRows.forEach(tr => {
+              let trNew = document.createElement('tr');
+              for (let g = 1; g <= maxGroupsNeeded; g++) {
+                const cells = tr.querySelectorAll(`.col-group-${g}`);
+                const divider = g > 1 ? 'col-divider' : '';
+                if (cells.length > 0 && cells[0].innerText.trim() !== "") {
+                  const noVal = parseInt(cells[0].innerText);
+                  const isMatch = filter.type === 'number' ? (noVal >= filter.start && noVal <= filter.end) : true;
+                  trNew.innerHTML += `
+                    <td class="no-column ${divider}">${isMatch ? cells[0].innerText : ''}</td>
+                    <td>${isMatch ? cells[1].innerText : ''}</td>
+                    <td>${isMatch ? cells[2].innerText : ''}</td>
+                    <td>${isMatch ? cells[3].innerText : ''}</td>
+                  `;
+                } else {
+                  trNew.innerHTML += `<td class="no-column ${divider}"></td><td></td><td></td><td></td>`;
+                }
+              }
+              tbody.appendChild(trNew);
+            });
+            tableClone.appendChild(tbody);
+
+            cardDiv.appendChild(tableClone);
+            if (sisipanClone) cardDiv.appendChild(sisipanClone);
+            pageDiv.appendChild(cardDiv);
+            printArea.appendChild(pageDiv);
+          }
         }
-        if (!rowVisible) tr.classList.add('print-hidden-row'); else tr.classList.remove('print-hidden-row');
-      });
+      }
 
-      document.querySelectorAll('#tableSisipan tbody tr').forEach(tr => {
-        const no = parseFloat(tr.getAttribute('data-no'));
-        const date = tr.getAttribute('data-date');
-        let visible = (filter.type === 'date') ? (date >= filter.start && date <= filter.end) : (no >= filter.start && no <= filter.end);
-        if (!visible) tr.classList.add('print-hidden-row'); else tr.classList.remove('print-hidden-row');
-      });
-
-      if (!hasCol1) document.body.classList.add('hide-col-1');
-      if (!hasCol2) document.body.classList.add('hide-col-2');
-      if (!hasCol3) document.body.classList.add('hide-col-3');
-
-      setTimeout(() => { window.print(); setTimeout(() => { location.reload(); }, 500); }, 500);
+      Swal.close();
+      if (printArea.innerHTML === '') {
+        Swal.fire('Info', 'Tidak ada data dalam rentang tersebut.', 'info');
+      } else {
+        // do not reveal printArea on screen; print stylesheet will make it visible during printing
+        setTimeout(() => {
+          window.print();
+        }, 500);
+      }
     }
 
     <?php if (isset($_GET['status'])): ?>
@@ -736,24 +922,6 @@
       else if (s === 'login_success') Swal.fire({ title: 'Selamat Datang!', text: 'Login admin berhasil.', icon: 'success', confirmButtonColor: '#212529' });
       else if (s === 'success' || s === 'updated') Swal.fire('Berhasil!', 'Data telah disimpan.', 'success');
       else if (s === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
-
-      const targetHash = window.location.hash;
-      if (targetHash && targetHash.startsWith('#data-')) {
-        const noUrut = targetHash.replace('#data-', '');
-        const sisipanRowId = 'sisipan-' + noUrut.replace(/\./g, '-');
-        const rowSisipan = document.getElementById(sisipanRowId);
-
-        if (rowSisipan) {
-          rowSisipan.classList.add('highlight-sisipan');
-          rowSisipan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          if (history.pushState) {
-            history.pushState("", document.title, window.location.pathname + window.location.search);
-          } else {
-            window.location.hash = "";
-          }
-        }
-      }
 
       const baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
       setTimeout(() => { window.history.replaceState(null, document.title, baseUrl); }, 2000);
