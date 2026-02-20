@@ -46,6 +46,11 @@
       animation: highlightFade 6s ease-in-out forwards;
     }
 
+    .search-highlight {
+      background-color: #fff59d !important;
+      /* light yellow */
+    }
+
     .main-card {
       background: #fff;
       border-radius: 12px;
@@ -212,7 +217,7 @@
       border: 1px solid #000;
       padding: 5px 15px;
       font-weight: 700;
-      font-size: 11px;
+      font-size: 12px;
       border-radius: 4px;
       transition: 0.3s ease;
     }
@@ -220,6 +225,42 @@
     .btn-export-custom:hover {
       background-color: #fff !important;
       color: #000 !important;
+    }
+
+    /* search button matches export style */
+    .btn-search-custom {
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #000;
+      padding: 5px 15px;
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 4px;
+      transition: 0.3s ease;
+    }
+
+    .btn-search-custom:hover {
+      background-color: #fff !important;
+      color: #000 !important;
+      border: 1px solid #000 !important;
+      /* add stroke on hover */
+    }
+
+    /* refresh button reverse of export/search */
+    .btn-refresh-custom {
+      background-color: #fff;
+      color: #000;
+      border: 1px solid #000;
+      padding: 5px 15px;
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 4px;
+      transition: 0.3s ease;
+    }
+
+    .btn-refresh-custom:hover {
+      background-color: #000 !important;
+      color: #fff !important;
     }
 
     .dropdown-menu {
@@ -441,9 +482,18 @@
         class="btn-outline-black">SELANJUTNYA</a>
     </div>
 
-    <div class="d-flex justify-content-end mb-4 action-buttons-container">
-      <button class="btn btn-sisipan-custom me-2 fw-bold" onclick="bukaModalSisipan()">+ SISIPAN</button>
-      <button class="btn-modern-add fw-bold" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
+    <div class="d-flex justify-content-between mb-4 action-buttons-container">
+      <div class="d-flex align-items-center">
+        <input type="text" id="searchInput" class="form-control form-control-sm me-2"
+          placeholder="Cari klasifikasi/tanggal/keterangan" style="max-width:300px;">
+        <button class="btn btn-sm btn-search-custom me-2" onclick="performSearch()">CARI</button>
+        <button class="btn btn-sm btn-refresh-custom" onclick="clearSearch()">REFRESH</button>
+        <!-- keeps search term -->
+      </div>
+      <div class="d-flex">
+        <button class="btn btn-sisipan-custom me-2 fw-bold" onclick="bukaModalSisipan()">+ SISIPAN</button>
+        <button class="btn-modern-add fw-bold" onclick="bukaModalTambah()">+ TAMBAH DATA</button>
+      </div>
     </div>
 
     <div class="table-responsive">
@@ -653,7 +703,6 @@
           if (params.has('highlight')) target = params.get('highlight');
         }
 
-        // fallback: sessionStorage from client-side submit
         if (!target) target = sessionStorage.getItem('scrollTo');
 
         if (target) {
@@ -668,16 +717,15 @@
           }
 
           if (el) {
-            // find the row element to highlight
-            let row = el.tagName.toLowerCase() === 'tr' ? el : el.closest('tr');
-            if (row) {
-              // scroll into center of page
-              row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              // add highlight class to row
-              row.classList.add('highlight-saved');
-              // remove class after animation end as fallback
-              setTimeout(() => { row.classList.remove('highlight-saved'); }, 4500);
+            let highlightEl = el;
+            let scrollTarget = el;
+            if (el.tagName.toLowerCase() !== 'tr') {
+              const parentRow = el.closest('tr');
+              if (parentRow) scrollTarget = parentRow;
             }
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            highlightEl.classList.add('highlight-saved');
+            setTimeout(() => { highlightEl.classList.remove('highlight-saved'); }, 4500);
           }
         }
       } catch (err) { /* ignore errors */ }
@@ -691,6 +739,75 @@
     }
 
     function syncNoSisipan(v) { document.getElementById('input_no').value = v; }
+
+    // perform search when enter is pressed, restore saved term, and persist on unload
+    document.addEventListener('DOMContentLoaded', function () {
+      const input = document.getElementById('searchInput');
+      if (input) {
+        // restore previous term if exists
+        const saved = sessionStorage.getItem('searchTerm');
+        if (saved) {
+          input.value = saved;
+          // automatically highlight existing term
+          performSearch();
+        }
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            performSearch();
+          }
+        });
+        // also update storage on typing
+        input.addEventListener('input', function () {
+          sessionStorage.setItem('searchTerm', input.value);
+        });
+        // ensure term saved even if user reloads without typing
+        window.addEventListener('beforeunload', function () {
+          sessionStorage.setItem('searchTerm', input.value);
+        });
+      }
+    });
+
+    function clearHighlights() {
+      const spans = document.querySelectorAll('span.search-highlight');
+      spans.forEach(sp => {
+        sp.outerHTML = sp.innerText;
+      });
+    }
+
+    function performSearch() {
+      const term = document.getElementById('searchInput').value.trim();
+      // clear only highlights (not input)
+      clearHighlights();
+      // preserve term across reloads
+      sessionStorage.setItem('searchTerm', term);
+      if (!term) return;
+      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\\$&')})`, 'gi');
+      const tables = [document.getElementById('mainTable'), document.getElementById('tableSisipan')];
+      tables.forEach(tbl => {
+        if (!tbl) return;
+        // grab all data cells (includes klasifikasi, tanggal, keterangan, etc.)
+        const cells = tbl.querySelectorAll('tbody td');
+        cells.forEach(td => {
+          if (!td || !td.innerText) return;
+          const original = td.innerText;
+          if (regex.test(original)) {
+            td.innerHTML = original.replace(regex, '<span class="search-highlight">$1</span>');
+          }
+        });
+      });
+    }
+
+    function clearSearch() {
+      // remove highlight spans and clear the input value
+      const spans = document.querySelectorAll('span.search-highlight');
+      spans.forEach(sp => {
+        sp.outerHTML = sp.innerText; // replace span with its text
+      });
+      // also remove stored term
+      document.getElementById('searchInput').value = '';
+      sessionStorage.removeItem('searchTerm');
+    }
 
     function bukaModalTambah() {
       document.getElementById('modalTitle').innerText = "TAMBAH DATA";
