@@ -710,7 +710,7 @@
       document.getElementById('container_tgl').style.display = "block";
       const inputSisipan = document.getElementById('display_no_sisipan');
       const tipeWeb = '<?php echo $currentType; ?>';
-      inputSisipan.placeholder = (tipeWeb === 'spt') ? "Contoh: 12.1" : "Contoh: 12.A";
+      inputSisipan.placeholder = (tipeWeb === 'spt') ? "Contoh: 12.1" : "Contoh: 12.a";
       formInput.reset(); modalCtrl.show();
     }
 
@@ -728,7 +728,7 @@
     }
 
     function konfirmasiLogout() {
-      Swal.fire({ title: 'Logout?', text: "Keluar admin?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa' })
+      Swal.fire({ title: 'Logout?', text: "Anda akan keluar dari admin.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa' })
         .then((r) => { if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; } });
     }
 
@@ -741,7 +741,7 @@
       Swal.fire({
         title: 'RENTANG WAKTU CETAK',
         customClass: { popup: 'my-swal', title: 'my-swal-title', htmlContainer: 'my-swal-content-export', actions: 'my-swal-actions-export' },
-        html: `<div class="text-start"><div class="mb-4"><label class="form-label small fw-bold d-block">MULAI</label><input type="date" id="swal_start" class="form-control shadow-none py-2 w-100"></div><div class="mb-2"><label class="form-label small fw-bold d-block">SELESAI</label><input type="date" id="swal_end" class="form-control shadow-none py-2 w-100"></div></div>`,
+        html: `<div class="text-start"><div class="mb-4"><label class="form-label small fw-bold d-block">WAKTU MULAI</label><input type="date" id="swal_start" class="form-control shadow-none py-2 w-100"></div><div class="mb-2"><label class="form-label small fw-bold d-block">WAKTU SELESAI</label><input type="date" id="swal_end" class="form-control shadow-none py-2 w-100"></div></div>`,
         showCancelButton: true, confirmButtonText: 'EXPORT', cancelButtonText: 'BATAL', buttonsStyling: false,
         didOpen: () => {
           Swal.getConfirmButton().className = 'btn btn-dark small fw-bold px-4 ms-2 order-2';
@@ -856,16 +856,13 @@
 
             const tableClone = document.createElement('table');
             tableClone.className = 'main-table text-center';
-            // make export table span whole area so it always looks wide
             tableClone.style.width = '100%';
             tableClone.style.margin = '0 auto';
 
-            // wrap everything in a card to mirror normal web layout
             const cardDiv = document.createElement('div');
             cardDiv.className = 'main-card';
             cardDiv.style.padding = '20px';
 
-            // Render Header Dinamis
             let headHTML = '<thead><tr>';
             for (let g = 1; g <= maxGroupsNeeded; g++) {
               headHTML += `<th class="${g > 1 ? 'col-divider' : ''}" width="35">No</th><th width="75">Klasifikasi</th><th width="80">Tanggal</th><th width="120">Ket (+)</th>`;
@@ -873,7 +870,6 @@
             headHTML += '</tr></thead>';
             tableClone.innerHTML = headHTML;
 
-            // Render Body Dinamis
             const tbody = document.createElement('tbody');
             filteredRows.forEach(tr => {
               let trNew = document.createElement('tr');
@@ -918,10 +914,10 @@
 
     <?php if (isset($_GET['status'])): ?>
       const s = '<?php echo $_GET['status']; ?>';
-      if (s === 'exists') Swal.fire('Error', 'Nomor duplikat!', 'error');
-      else if (s === 'login_success') Swal.fire({ title: 'Selamat Datang!', text: 'Login admin berhasil.', icon: 'success', confirmButtonColor: '#212529' });
-      else if (s === 'success' || s === 'updated') Swal.fire('Berhasil!', 'Data telah disimpan.', 'success');
-      else if (s === 'deleted') Swal.fire('Dihapus!', 'Data telah dihapus.', 'success');
+      if (s === 'exists') Swal.fire('Error', 'Nomor sisipan sudah digunakan.', 'error');
+      else if (s === 'login_success') Swal.fire({ title: 'Selamat Datang!', text: 'Login admin berhasil.', icon: 'success' });
+      else if (s === 'success' || s === 'updated') Swal.fire('Berhasil!', 'Data berhasil disimpan.', 'success');
+      else if (s === 'deleted') Swal.fire('Dihapus!', 'Data berhasil dihapus.', 'success');
 
       const baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
       setTimeout(() => { window.history.replaceState(null, document.title, baseUrl); }, 2000);
