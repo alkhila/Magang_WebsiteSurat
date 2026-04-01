@@ -20,7 +20,16 @@ class Pengendali
     // AUTH FUNCTIONS
     public function login($username, $password)
     {
-        $query = "SELECT * FROM pengguna WHERE username = ? AND password = ?";
+        // Cek di tabel pengguna terlebih dahulu
+        $query = "SELECT id, username, role FROM pengguna WHERE username = ? AND password = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$username, $password]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            return $user;
+        }
+
+        $query = "SELECT id, username, 'admin' as role FROM admin WHERE username = ? AND password = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$username, $password]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,7 +37,15 @@ class Pengendali
 
     public function getUserByUsername($username)
     {
-        $query = "SELECT * FROM pengguna WHERE username = ?";
+        $query = "SELECT id, username, role FROM pengguna WHERE username = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            return $user;
+        }
+
+        $query = "SELECT id, username, 'admin' as role FROM admin WHERE username = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
