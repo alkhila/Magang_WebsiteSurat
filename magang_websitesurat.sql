@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 01, 2026 at 05:35 PM
+-- Generation Time: Apr 01, 2026 at 06:03 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -126,16 +126,15 @@ CREATE TABLE `pengguna` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `nama_lengkap` varchar(100) DEFAULT NULL,
-  `role` enum('admin','user') DEFAULT 'user'
+  `nama_lengkap` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pengguna`
 --
 
-INSERT INTO `pengguna` (`id`, `username`, `password`, `nama_lengkap`, `role`) VALUES
-(2, 'sean', 'sean', 'eom seonghyeon', 'user');
+INSERT INTO `pengguna` (`id`, `username`, `password`, `nama_lengkap`) VALUES
+(2, 'sean', 'sean', 'eom seonghyeon');
 
 --
 -- Indexes for dumped tables
