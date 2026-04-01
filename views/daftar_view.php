@@ -21,9 +21,14 @@
       --active-page-bg: #e1e4eb;
     }
 
+    body,
+    html,
+    * {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
     body {
       background-color: #f8fafc;
-      font-family: 'Plus Jakarta Sans', sans-serif;
       color: #000;
       padding: 40px 15px;
     }
@@ -49,6 +54,16 @@
     .search-highlight {
       background-color: #fff59d !important;
       /* light yellow */
+    }
+
+    .btn-search-custom,
+    .btn-refresh-custom,
+    .btn-export-custom,
+    #searchInput,
+    .form-control,
+    .form-control-sm,
+    .input-group .form-control {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
     .main-card {
@@ -166,6 +181,33 @@
       border-bottom: 1px solid #000;
       border-right: 1px solid #000;
       vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .main-table td.desc {
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-width: 170px;
+      line-height: 1.2;
+    }
+
+    .main-table td .btn-action-edit,
+    .main-table td .btn-action-delete {
+      display: inline-block;
+      margin-right: 4px;
+      max-width: 40px;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .main-table td .btn-action-readonly {
+      display: inline-block;
+      margin-right: 4px;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
     }
 
     .no-column {
@@ -215,7 +257,7 @@
       background-color: #000;
       color: #fff;
       border: 1px solid #000;
-      padding: 5px 15px;
+      padding: 3.5px 9px;
       font-weight: 700;
       font-size: 12px;
       border-radius: 4px;
@@ -227,27 +269,14 @@
       color: #000 !important;
     }
 
-    /* search button matches export style */
-    .btn-search-custom {
-      background-color: #000;
-      color: #fff;
-      border: 1px solid #000;
-      padding: 5px 15px;
+    .btn-logout-top {
+      padding: 3.5px 9px;
       font-weight: 700;
       font-size: 12px;
       border-radius: 4px;
-      transition: 0.3s ease;
     }
 
-    .btn-search-custom:hover {
-      background-color: #fff !important;
-      color: #000 !important;
-      border: 1px solid #000 !important;
-      /* add stroke on hover */
-    }
-
-    /* refresh button reverse of export/search */
-    .btn-refresh-custom {
+    .btn-search-custom {
       background-color: #fff;
       color: #000;
       border: 1px solid #000;
@@ -258,9 +287,30 @@
       transition: 0.3s ease;
     }
 
-    .btn-refresh-custom:hover {
+    .btn-search-custom:hover,
+    .btn-search-custom:focus {
       background-color: #000 !important;
       color: #fff !important;
+      border: 1px solid #000 !important;
+    }
+
+    .btn-refresh-custom {
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #000;
+      padding: 5px 15px;
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 4px;
+      transition: 0.3s ease;
+    }
+
+    .btn-refresh-custom:hover,
+    .btn-refresh-custom:focus {
+      background-color: #fff !important;
+      color: #000 !important;
+      border: 1px solid #000 !important;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) !important;
     }
 
     .dropdown-menu {
@@ -443,8 +493,17 @@
       <div class="d-flex align-items-center p-0">
         <?php if (isset($_SESSION['user_id'])): ?>
           <span class="small fw-bold me-3 text-uppercase">User: <?php echo $_SESSION['username']; ?></span>
-          <button onclick="konfirmasiLogout()" class="btn btn-danger btn-sm fw-bold"
-            style="font-size: 11px; border-radius: 4px;">LOGOUT</button>
+          <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+            <div class="dropdown me-2">
+              <button class="btn-export-custom dropdown-toggle shadow-none" type="button" data-bs-toggle="dropdown">EXPORT
+                PDF</button>
+              <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li><a class="dropdown-item" href="#" onclick="pilihRentangCetak()">BERDASARKAN RENTANG WAKTU</a></li>
+                <li><a class="dropdown-item" href="#" onclick="pilihNomorUrutCetak()">BERDASARKAN NOMOR URUT</a></li>
+              </ul>
+            </div>
+          <?php endif; ?>
+          <button onclick="konfirmasiLogout()" class="btn btn-danger btn-sm fw-bold btn-logout-top">LOGOUT</button>
         <?php endif; ?>
       </div>
     </div>
@@ -501,8 +560,8 @@
           <tr>
             <?php for ($k = 1; $k <= 3; $k++): ?>
               <th class="col-group-<?php echo $k; ?> <?php echo ($k > 1) ? 'col-divider' : ''; ?>" width="35">No</th>
-              <th class="col-group-<?php echo $k; ?>" width="75">Klasifikasi</th>
-              <th class="col-group-<?php echo $k; ?>" width="80">Tanggal</th>
+              <th class="col-group-<?php echo $k; ?>" width="100">Klasifikasi</th>
+              <th class="col-group-<?php echo $k; ?>" width="75">Tanggal</th>
               <th class="col-group-<?php echo $k; ?>" width="120">Ket (+)</th>
               <th class="col-group-<?php echo $k; ?>" width="85">Aksi</th>
             <?php endfor; ?>
@@ -529,23 +588,30 @@
                     data-no="<?php echo $curr_no; ?>" data-date="<?php echo $dataDate; ?>"><?php echo $curr_no; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>"><?php echo $k; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>"><?php echo $tDisplay; ?></td>
-                  <td class="col-group-<?php echo $r['g']; ?>"><?php echo $p; ?></td>
+                  <td class="col-group-<?php echo $r['g']; ?> desc"><?php echo $p; ?></td>
                   <td class="col-group-<?php echo $r['g']; ?>">
                     <?php
                     $hasData = trim($k) !== '' || trim($p) !== '' || trim($tDisplay) !== '';
 
-                    // LOGIKA AKSES: Boleh edit jika user adalah Admin ATAU User tersebut yang membuat data
                     $isOwner = (isset($data[$curr_no]['uid']) && $data[$curr_no]['uid'] == $_SESSION['user_id']);
                     $isAdmin = ($_SESSION['role'] === 'admin');
+                    $canEdit = $isOwner || $isAdmin;
+                    $canDelete = $isAdmin;
 
-                    if ($hasData && ($isOwner || $isAdmin)): ?>
-                      <button class="btn-action-edit"
-                        onclick="bukaModalEdit('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', '<?php echo $k; ?>', '<?php echo $p; ?>', '', false)">EDIT</button>
-                      <button class="btn-action-delete"
-                        onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
-                    <?php elseif ($hasData): ?>
-                      <button class="btn-action-readonly" disabled>READ ONLY</button>
-                    <?php endif; ?>
+                    if ($hasData):
+                      if ($canEdit): ?>
+                        <button class="btn-action-edit"
+                          onclick="bukaModalEdit('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', '<?php echo $k; ?>', '<?php echo $p; ?>', '', false)">EDIT</button>
+                      <?php endif;
+                      if ($canDelete): ?>
+                        <button class="btn-action-delete"
+                          onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
+                      <?php endif;
+
+                      if (!$canEdit && !$canDelete): ?>
+                        <button class="btn-action-readonly" disabled>READ ONLY</button>
+                      <?php endif;
+                    endif; ?>
                   </td>
                 <?php else: ?>
                   <td colspan="5" class="col-group-<?php echo $r['g']; ?> <?php echo $divider; ?>"></td>
@@ -565,9 +631,9 @@
             <thead>
               <tr style="background-color: #fef2f2;">
                 <th width="100">No. Sisipan</th>
-                <th>Klasifikasi</th>
-                <th>Tanggal</th>
-                <th>Ket (+)</th>
+                <th width="100">Klasifikasi</th>
+                <th width="80">Tanggal</th>
+                <th width="120">Ket (+)</th>
                 <th width="140">Aksi</th>
               </tr>
             </thead>
@@ -579,16 +645,23 @@
                   <td class="fw-bold"><?php echo $s['no_urut']; ?></td>
                   <td><?php echo $s['klas']; ?></td>
                   <td><?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?></td>
-                  <td><?php echo $s['plus']; ?></td>
+                  <td class="desc"><?php echo $s['plus']; ?></td>
                   <td>
                     <?php
                     $isSisipanOwner = ($s['pembuat_id'] == $_SESSION['user_id']);
-                    if ($isSisipanOwner || $isAdmin): ?>
+                    $isAdmin = ($_SESSION['role'] === 'admin');
+                    $canEditSisipan = $isSisipanOwner || $isAdmin;
+                    $canDeleteSisipan = $isAdmin;
+
+                    if ($canEditSisipan): ?>
                       <button class="btn-action-edit"
                         onclick="bukaModalEdit('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', '<?php echo $s['klas']; ?>', '<?php echo $s['plus']; ?>', '<?php echo $s['tanggal_manual']; ?>', true)">EDIT</button>
+                    <?php endif;
+                    if ($canDeleteSisipan): ?>
                       <button class="btn-action-delete"
                         onclick="konfirmasiHapus('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', true)">HAPUS</button>
-                    <?php else: ?>
+                    <?php endif;
+                    if (!$canEditSisipan && !$canDeleteSisipan): ?>
                       <button class="btn-action-readonly" disabled>READ ONLY</button>
                     <?php endif; ?>
                   </td>
@@ -853,8 +926,15 @@
     }
 
     function konfirmasiLogout() {
-      Swal.fire({ title: 'Logout?', text: "Anda akan keluar dari admin.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#aaa' })
-        .then((r) => { if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; } });
+      const username = '<?php echo isset($_SESSION['username']) ? addslashes($_SESSION['username']) : 'user'; ?>';
+      Swal.fire({
+        title: 'Logout?',
+        text: `Anda akan keluar dari ${username}.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#aaa'
+      }).then((r) => { if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; } });
     }
 
     function konfirmasiHapus(id, no, s = false) {
@@ -990,7 +1070,7 @@
 
             let headHTML = '<thead><tr>';
             for (let g = 1; g <= maxGroupsNeeded; g++) {
-              headHTML += `<th class="${g > 1 ? 'col-divider' : ''}" width="35">No</th><th width="75">Klasifikasi</th><th width="80">Tanggal</th><th width="120">Ket (+)</th>`;
+              headHTML += `<th class="${g > 1 ? 'col-divider' : ''}" width="35">No</th><th width="100">Klasifikasi</th><th width="80">Tanggal</th><th width="120">Ket (+)</th>`;
             }
             headHTML += '</tr></thead>';
             tableClone.innerHTML = headHTML;

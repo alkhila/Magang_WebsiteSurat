@@ -300,12 +300,13 @@ if (!isset($_GET['type'])) {
       </div>
     <?php endif; ?>
     <div class="choice-card">
-      <div class="mb-4 small fw-bold text-uppercase">Selamat Datang, <?php echo $_SESSION['username']; ?></div>
-      <h2>SISTEM PENGENDALI SURAT</h2>
+      <h2>SISTEM PENGENDALI SURAT</h2> <br>
+      <div class="small fw-bold text-uppercase">Selamat Datang, <?php echo $_SESSION['username']; ?>
+      </div>
       <p class="mb-4">Pilih jenis pengendalian surat untuk melanjutkan</p>
       <div class="d-flex gap-3 justify-content-center">
-        <a href="index.php?type=biasa" class="btn-choice">Surat Keluar Biasa</a>
-        <a href="index.php?type=spt" class="btn-choice">Surat Keluar SPT</a>
+        <a href="index.php?type=biasa" class="btn-choice">SURAT KELUAR BIASA</a>
+        <a href="index.php?type=spt" class="btn-choice">SURAT KELUAR SPT</a>
       </div>
     </div>
   </body>

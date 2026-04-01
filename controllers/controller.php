@@ -116,6 +116,11 @@ class PengendaliController
 
         // 5. HAPUS
         if (isset($_GET['hapus'])) {
+            $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
+            if (!$isAdmin) {
+                header("Location: index.php?page=$page&type=$tipe&status=forbidden");
+                exit();
+            }
             if (isset($_GET['sisipan']))
                 $this->model->deleteSisipan($_GET['hapus']);
             else
