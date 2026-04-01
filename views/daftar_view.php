@@ -56,6 +56,13 @@
       /* light yellow */
     }
 
+    .swal2-title-bold,
+    .swal2-content,
+    .swal-normal-body,
+    .swal2-html-container {
+      font-weight: normal !important;
+    }
+
     .btn-search-custom,
     .btn-refresh-custom,
     .btn-export-custom,
@@ -383,6 +390,10 @@
       text-align: left !important;
     }
 
+    .swal2-html-container {
+      font-weight: normal !important;
+    }
+
     .swal2-html-container.my-swal-content-export {
       margin: 0 !important;
       text-align: left !important;
@@ -493,7 +504,7 @@
       <div class="d-flex align-items-center p-0">
         <?php if (isset($_SESSION['user_id'])): ?>
           <span class="small fw-bold me-3 text-uppercase">User: <?php echo $_SESSION['username']; ?></span>
-          <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+          <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
             <div class="dropdown me-2">
               <button class="btn-export-custom dropdown-toggle shadow-none" type="button" data-bs-toggle="dropdown">EXPORT
                 PDF</button>
@@ -594,7 +605,7 @@
                     $hasData = trim($k) !== '' || trim($p) !== '' || trim($tDisplay) !== '';
 
                     $isOwner = (isset($data[$curr_no]['uid']) && $data[$curr_no]['uid'] == $_SESSION['user_id']);
-                    $isAdmin = ($_SESSION['role'] === 'admin');
+                    $isAdmin = (isset($_SESSION['is_admin']) && $_SESSION['is_admin']);
                     $canEdit = $isOwner || $isAdmin;
                     $canDelete = $isAdmin;
 
@@ -649,7 +660,7 @@
                   <td>
                     <?php
                     $isSisipanOwner = ($s['pembuat_id'] == $_SESSION['user_id']);
-                    $isAdmin = ($_SESSION['role'] === 'admin');
+                    $isAdmin = (isset($_SESSION['is_admin']) && $_SESSION['is_admin']);
                     $canEditSisipan = $isSisipanOwner || $isAdmin;
                     $canDeleteSisipan = $isAdmin;
 
@@ -928,12 +939,22 @@
     function konfirmasiLogout() {
       const username = '<?php echo isset($_SESSION['username']) ? addslashes($_SESSION['username']) : 'user'; ?>';
       Swal.fire({
-        title: 'Logout?',
+        title: 'Konfirmasi Logout',
         text: `Anda akan keluar dari ${username}.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: '#aaa'
+        cancelButtonColor: '#aaa',
+        confirmButtonText: 'Ya, keluar',
+        cancelButtonText: 'Batal',
+        scrollbarPadding: false,
+        heightAuto: false,
+        background: '#fff',
+        customClass: {
+          popup: 'swal2-border',
+          title: 'swal2-title-bold',
+          htmlContainer: 'swal-normal-body'
+        }
       }).then((r) => { if (r.isConfirmed) { window.location.href = "index.php?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>&logout=1"; } });
     }
 

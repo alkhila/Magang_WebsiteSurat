@@ -38,6 +38,13 @@ if (!isset($_SESSION['user_id'])) {
         overflow-y: auto;
       }
 
+      .swal2-title-bold,
+      .swal2-content,
+      .swal2-html-container,
+      .swal-normal-body {
+        font-weight: normal !important;
+      }
+
       .auth-card {
         background: white;
         padding: 40px;
@@ -61,6 +68,10 @@ if (!isset($_SESSION['user_id'])) {
         color: #fff;
         font-weight: 700;
         border: none;
+      }
+
+      .swal2-html-container {
+        font-weight: normal !important;
       }
 
       .btn-auth:hover {
@@ -247,7 +258,7 @@ if (!isset($_GET['type'])) {
         background-image: url('assets/bangunan_dinpus.webp');
         background-size: cover;
         background-position: center;
-        height: 100vh;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -296,7 +307,8 @@ if (!isset($_GET['type'])) {
   <body>
     <?php if (isset($_SESSION['user_id'])): ?>
       <div class="fixed-logout-choice">
-        <a href="index.php?logout=1" class="btn btn-danger btn-sm fw-bold" style="border-radius:4px;">LOGOUT</a>
+        <button type="button" class="btn btn-danger btn-sm fw-bold" style="border-radius:4px;"
+          onclick="konfirmasiLogoutChoice();">LOGOUT</button>
       </div>
     <?php endif; ?>
     <div class="choice-card">
@@ -309,6 +321,35 @@ if (!isset($_GET['type'])) {
         <a href="index.php?type=spt" class="btn-choice">SURAT KELUAR SPT</a>
       </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      function konfirmasiLogoutChoice() {
+        const username = '<?php echo isset($_SESSION['username']) ? addslashes($_SESSION['username']) : 'user'; ?>';
+        Swal.fire({
+          title: 'Konfirmasi Logout',
+          text: `Anda akan keluar dari ${username}.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#aaa',
+          confirmButtonText: 'Ya, keluar',
+          cancelButtonText: 'Batal',
+          scrollbarPadding: false,
+          heightAuto: false,
+          background: '#fff',
+          customClass: {
+            popup: 'swal2-border',
+            title: 'swal2-title-bold',
+            htmlContainer: 'swal-normal-body'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = 'index.php?logout=1';
+          }
+        });
+      }
+    </script>
   </body>
 
   </html>

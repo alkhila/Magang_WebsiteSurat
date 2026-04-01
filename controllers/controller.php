@@ -37,7 +37,7 @@ class PengendaliController
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
+                $_SESSION['is_admin'] = isset($user['is_admin']) && $user['is_admin'];
                 header("Location: index.php?status=login_success");
             } else {
                 $existingUser = $this->model->getUserByUsername($username);
@@ -116,7 +116,7 @@ class PengendaliController
 
         // 5. HAPUS
         if (isset($_GET['hapus'])) {
-            $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
+            $isAdmin = (isset($_SESSION['is_admin']) && $_SESSION['is_admin']);
             if (!$isAdmin) {
                 header("Location: index.php?page=$page&type=$tipe&status=forbidden");
                 exit();

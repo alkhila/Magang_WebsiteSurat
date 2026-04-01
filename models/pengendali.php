@@ -21,31 +21,39 @@ class Pengendali
     public function login($username, $password)
     {
         // Cek di tabel pengguna terlebih dahulu
-        $query = "SELECT id, username, role FROM pengguna WHERE username = ? AND password = ?";
+        $query = "SELECT id, username FROM pengguna WHERE username = ? AND password = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$username, $password]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($user) {
+            $user['is_admin'] = false;
             return $user;
         }
 
-        $query = "SELECT id, username, 'admin' as role FROM admin WHERE username = ? AND password = ?";
+        $query = "SELECT id, username FROM admin WHERE username = ? AND password = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$username, $password]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($admin) {
+            $admin['is_admin'] = true;
+            return $admin;
+        }
+
+        return false;
     }
 
     public function getUserByUsername($username)
     {
-        $query = "SELECT id, username, role FROM pengguna WHERE username = ?";
+        $query = "SELECT id, username FROM pengguna WHERE username = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($user) {
+            $user['is_admin'] = false;
             return $user;
         }
 
-        $query = "SELECT id, username, 'admin' as role FROM admin WHERE username = ?";
+        $query = "SELECT id, username FROM admin WHERE username = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -53,7 +61,7 @@ class Pengendali
 
     public function register($username, $password, $nama)
     {
-        $query = "INSERT INTO pengguna (username, password, nama_lengkap, role) VALUES (?, ?, ?, 'user')";
+        $query = "INSERT INTO pengguna (username, password, nama_lengkap) VALUES (?, ?, ?)";
         return $this->conn->prepare($query)->execute([$username, $password, $nama]);
     }
 
