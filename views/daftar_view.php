@@ -304,6 +304,17 @@
       font-weight: 700;
     }
 
+    .btn-action-readonly {
+      background-color: #6c757d;
+      color: #fff;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      cursor: not-allowed;
+    }
+
     .swal2-popup.my-swal {
       padding: 0 !important;
       border-radius: 12px !important;
@@ -429,23 +440,11 @@
       <a href="index.php" class="btn btn-sm btn-outline-secondary fw-bold" style="font-size: 11px;">
         <i class="bi bi-arrow-left"></i> KEMBALI KE PILIHAN
       </a>
-
       <div class="d-flex align-items-center p-0">
-        <?php if (isset($_SESSION['admin_id'])): ?>
-          <span class="small fw-bold me-3 text-uppercase">Admin: <?php echo $_SESSION['admin_user']; ?></span>
-          <div class="dropdown me-2">
-            <button class="btn-export-custom dropdown-toggle shadow-none" type="button" data-bs-toggle="dropdown">EXPORT
-              PDF</button>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
-              <li><a class="dropdown-item" href="#" onclick="pilihRentangCetak()">BERDASARKAN RENTANG WAKTU</a></li>
-              <li><a class="dropdown-item" href="#" onclick="pilihNomorUrutCetak()">BERDASARKAN NOMOR URUT</a></li>
-            </ul>
-          </div>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <span class="small fw-bold me-3 text-uppercase">User: <?php echo $_SESSION['username']; ?></span>
           <button onclick="konfirmasiLogout()" class="btn btn-danger btn-sm fw-bold"
             style="font-size: 11px; border-radius: 4px;">LOGOUT</button>
-        <?php else: ?>
-          <button class="btn-outline-black px-3 py-1" style="font-size: 11px;" data-bs-toggle="modal"
-            data-bs-target="#modalLogin">LOGIN ADMIN</button>
         <?php endif; ?>
       </div>
     </div>
@@ -534,13 +533,18 @@
                   <td class="col-group-<?php echo $r['g']; ?>">
                     <?php
                     $hasData = trim($k) !== '' || trim($p) !== '' || trim($tDisplay) !== '';
-                    if ($hasData): ?>
+
+                    // LOGIKA AKSES: Boleh edit jika user adalah Admin ATAU User tersebut yang membuat data
+                    $isOwner = (isset($data[$curr_no]['uid']) && $data[$curr_no]['uid'] == $_SESSION['user_id']);
+                    $isAdmin = ($_SESSION['role'] === 'admin');
+
+                    if ($hasData && ($isOwner || $isAdmin)): ?>
                       <button class="btn-action-edit"
                         onclick="bukaModalEdit('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', '<?php echo $k; ?>', '<?php echo $p; ?>', '', false)">EDIT</button>
-                      <?php if (isset($_SESSION['admin_id'])): ?>
-                        <button class="btn-action-delete"
-                          onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
-                      <?php endif; ?>
+                      <button class="btn-action-delete"
+                        onclick="konfirmasiHapus('<?php echo $curr_no; ?>', '<?php echo $curr_no; ?>', false)">HAPUS</button>
+                    <?php elseif ($hasData): ?>
+                      <button class="btn-action-readonly" disabled>READ ONLY</button>
                     <?php endif; ?>
                   </td>
                 <?php else: ?>
@@ -577,11 +581,15 @@
                   <td><?php echo date('d-m-y', strtotime($s['tanggal_manual'])); ?></td>
                   <td><?php echo $s['plus']; ?></td>
                   <td>
-                    <button class="btn-action-edit"
-                      onclick="bukaModalEdit('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', '<?php echo $s['klas']; ?>', '<?php echo $s['plus']; ?>', '<?php echo $s['tanggal_manual']; ?>', true)">EDIT</button>
-                    <?php if (isset($_SESSION['admin_id'])): ?>
+                    <?php
+                    $isSisipanOwner = ($s['pembuat_id'] == $_SESSION['user_id']);
+                    if ($isSisipanOwner || $isAdmin): ?>
+                      <button class="btn-action-edit"
+                        onclick="bukaModalEdit('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', '<?php echo $s['klas']; ?>', '<?php echo $s['plus']; ?>', '<?php echo $s['tanggal_manual']; ?>', true)">EDIT</button>
                       <button class="btn-action-delete"
                         onclick="konfirmasiHapus('<?php echo $s['no_urut']; ?>', '<?php echo $s['no_urut']; ?>', true)">HAPUS</button>
+                    <?php else: ?>
+                      <button class="btn-action-readonly" disabled>READ ONLY</button>
                     <?php endif; ?>
                   </td>
                 </tr>
@@ -1031,9 +1039,20 @@
 
     <?php if (isset($_GET['status'])): ?>
       const s = '<?php echo $_GET['status']; ?>';
+      const reason = '<?php echo isset($_GET['reason']) ? $_GET['reason'] : ''; ?>';
       if (s === 'exists') Swal.fire('Error', 'Nomor sisipan sudah digunakan.', 'error');
-      else if (s === 'login_success') Swal.fire({ title: 'Selamat Datang!', text: 'Login admin berhasil.', icon: 'success' });
-      else if (s === 'success' || s === 'updated') Swal.fire('Berhasil!', 'Data berhasil disimpan.', 'success');
+      else if (s === 'login_success') Swal.fire('Sukses', 'Login berhasil. Selamat datang!', 'success');
+      else if (s === 'login_failed') {
+        let msg = 'Login gagal.';
+        if (reason === 'username_not_found') msg = 'Login gagal: Username tidak ditemukan.';
+        else if (reason === 'wrong_password') msg = 'Login gagal: Password salah.';
+        Swal.fire('Gagal', msg, 'error');
+      } else if (s === 'reg_success') Swal.fire('Sukses', 'Registrasi berhasil. Silahkan login.', 'success');
+      else if (s === 'reg_failed') {
+        let msg = 'Registrasi gagal.';
+        if (reason === 'username_taken') msg = 'Registrasi gagal: Username sudah digunakan.';
+        Swal.fire('Gagal', msg, 'error');
+      } else if (s === 'success' || s === 'updated') Swal.fire('Berhasil!', 'Data berhasil disimpan.', 'success');
       else if (s === 'deleted') Swal.fire('Dihapus!', 'Data berhasil dihapus.', 'success');
 
       const baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=<?php echo $currentPage; ?>&type=<?php echo $currentType; ?>";
